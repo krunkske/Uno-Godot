@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://w4k43bp3ecot"]
+
+[ext_resource type="PackedScene" uid="uid://bjpaxenrqk8d4" path="res://scenes/card.tscn" id="1_7yoff"]
+
+[node name="pile_up" type="Node2D"]
+
+[node name="next_card" parent="." instance=ExtResource("1_7yoff")]
