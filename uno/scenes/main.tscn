@@ -1,9 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://mavmups1w1rr"]
+[gd_scene load_steps=7 format=3 uid="uid://mavmups1w1rr"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_lwx3j"]
+[ext_resource type="Script" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
 [ext_resource type="PackedScene" uid="uid://w4k43bp3ecot" path="res://scenes/pile_up.tscn" id="2_fsj4h"]
 [ext_resource type="PackedScene" uid="uid://bqgxagm81ux1" path="res://scenes/pile_down.tscn" id="2_t8fnk"]
 [ext_resource type="PackedScene" uid="uid://bxp7oom05334p" path="res://scenes/player_deck.tscn" id="2_uhpk0"]
+[ext_resource type="PackedScene" uid="uid://c0pm8x4sewfic" path="res://scenes/lobby_ui.tscn" id="5_r7eh0"]
+[ext_resource type="PackedScene" uid="uid://bjktxdg7x3ico" path="res://scenes/info_gui.tscn" id="6_25lth"]
 
 [node name="main" type="Node"]
 script = ExtResource("1_lwx3j")
@@ -17,11 +19,11 @@ position = Vector2(119, 302)
 rotation = 1.57607
 
 [node name="player3_deck" parent="." instance=ExtResource("2_uhpk0")]
-position = Vector2(999, 307)
+position = Vector2(601, 98)
 rotation = -1.55882
 
 [node name="player4_deck" parent="." instance=ExtResource("2_uhpk0")]
-position = Vector2(607, 94)
+position = Vector2(993, 327)
 rotation = -3.12565
 
 [node name="pile_down" parent="." instance=ExtResource("2_t8fnk")]
@@ -31,3 +33,13 @@ scale = Vector2(0.4, 0.4)
 [node name="pile_up" parent="." instance=ExtResource("2_fsj4h")]
 position = Vector2(678, 293)
 scale = Vector2(0.4, 0.4)
+
+[node name="GUI" type="Node" parent="."]
+
+[node name="lobby_UI" parent="GUI" instance=ExtResource("5_r7eh0")]
+
+[node name="info_gui" parent="GUI" instance=ExtResource("6_25lth")]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2

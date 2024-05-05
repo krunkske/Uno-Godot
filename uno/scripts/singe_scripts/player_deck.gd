@@ -18,26 +18,28 @@ func _process(delta: float) -> void:
 	pass
 
 func add_card(type):
+	print(type)
 	var card = crad_scene.instantiate()
-	card.set_frame_coords(type.type)
-	type.card_node = card
+	card.set_frame_coords(type)
+	if name == "player1_deck":
+		card.my_card = true
 	add_child(card)
+	card.global_position = Aload.pile_down.global_position
 	rearrange_cards()
+
+func remove_card(index):
+	var cards = self.get_children()
+	var Index = 0
+	for card in cards:
+		if index == Index:
+			card.go_to_middle()
+			card.reparent(Aload.pile_up)
+			return
+		Index += 1
 
 
 func rearrange_cards():
-	var cards
-	
-	match name:
-		"player1_deck":
-			cards = Aload.p1_cards
-		"player2_deck":
-			cards = Aload.p2_cards
-		"player3_deck":
-			cards = Aload.p3_cards
-		"player4_deck":
-			cards = Aload.p4_cards
-	
+	var cards = self.get_children()
 	var card_len = len(cards)
 	var tweens_move = []
 	var tweens_rotate = []
@@ -47,6 +49,7 @@ func rearrange_cards():
 		tweens_move[-1].set_trans(Tween.TRANS_QUAD)
 		tweens_rotate.append(get_tree().create_tween())
 		tweens_rotate[-1].set_trans(Tween.TRANS_QUAD)
+		
 	
 	var compactness = 200 - card_len*7.5
 	
@@ -56,12 +59,9 @@ func rearrange_cards():
 		if j_pos == 0:
 			j_pos = 1 
 		
-		print("len cards: " + str(card_len))
-		print("i: " + str(i))
-		print("j: " + str(j))
+		cards[i].base_pos = Vector2(compactness*j,30 * absi(j_pos))
+		cards[i].playing_anim = true
 		
-		cards[i].card_node.global_position = Aload.pile_down.global_position
-		cards[i].card_node.my_card = true
-		cards[i].card_node.base_pos = Vector2(compactness*j,30 * absi(j_pos))
-		tweens_move[i].tween_property(cards[i].card_node, "position", Vector2(compactness*j,30 * absi(j_pos)), 0.5)
-		tweens_rotate[i].tween_property(cards[i].card_node, "rotation_degrees", 5*j, 0.5)
+		tweens_move[i].tween_property(cards[i], "position", Vector2(compactness*j,30 * absi(j_pos)), 0.5)
+		tweens_move[i].tween_callback(cards[i].set_playing_anim)
+		tweens_rotate[i].tween_property(cards[i], "rotation_degrees", 5*j, 0.5)

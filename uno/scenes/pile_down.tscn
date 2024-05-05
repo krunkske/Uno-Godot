@@ -4,5 +4,7 @@
 
 [node name="pile_down" type="Node2D"]
 
-[node name="card" parent="." instance=ExtResource("1_oyv7t")]
+[node name="card_down" parent="." instance=ExtResource("1_oyv7t")]
 frame = 56
+my_card = true
+top_card = true
