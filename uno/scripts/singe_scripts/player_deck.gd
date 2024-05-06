@@ -18,7 +18,6 @@ func _process(delta: float) -> void:
 	pass
 
 func add_card(type):
-	print(type)
 	var card = crad_scene.instantiate()
 	card.set_frame_coords(type)
 	if name == "player1_deck":
@@ -27,13 +26,15 @@ func add_card(type):
 	card.global_position = Aload.pile_down.global_position
 	rearrange_cards()
 
-func remove_card(index):
+func remove_card(index, type):
 	var cards = self.get_children()
 	var Index = 0
 	for card in cards:
 		if index == Index:
 			card.go_to_middle()
+			card.set_frame_coords(type)
 			card.reparent(Aload.pile_up)
+			rearrange_cards()
 			return
 		Index += 1
 

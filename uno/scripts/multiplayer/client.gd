@@ -2,6 +2,7 @@ extends Node
 
 var playerNames = [] #[{"id": -1, "name": "player1"}] example
 var player_order = []
+var player_decks = []
 var my_cards = [] #[vector2i(0, 2), vector2i(2, 6), ...] example
 
 var current_player_pos = 0
@@ -24,8 +25,35 @@ func start_game(cards, pile_up_card, order):
 	for i in range(1, len(order)):
 		for j in range(7):
 			Aload.decks[i].add_card(Vector2i(0, 4))
+	assing_player_decks()
 
+func assing_player_decks():
+	for i in player_order:
+		player_decks.append(null)
+	var index = 0
+	for i in player_order:
+		if i == multiplayer.get_unique_id():
+			player_decks[index] = Aload.deck1
+			break
+		index += 1
+	
+	var position = index
+	var other_index = 1 #we can skip 0 bc thats your deck
+	while true:
+		var checked = false
+		for i in player_decks:
+			if i == null:
+				checked = true
+		if not checked:
+			return
+		
+		position += 1
+		if position > len(player_decks) - 1:
+			position = 0
+		
+		player_decks[position] = Aload.decks[other_index]
 
+		other_index += 1
 
 #CHECK THESE AGAIN
 @rpc("authority", "call_local", "reliable")
@@ -33,7 +61,7 @@ func recieve_cards(player_id, cards):
 	for i in Aload.players:
 		if i.id == player_id:
 			for j in cards:
-				i.cards.appemd(cards)
+				i.cards.append(cards)
 
 @rpc("authority", "call_local", "reliable")
 func played_card(player_id, card):
@@ -41,14 +69,14 @@ func played_card(player_id, card):
 	if player_id == multiplayer.get_unique_id():
 		for i in my_cards:
 			if i == card:
-				Aload.deck1.remove_card(index)
+				Aload.deck1.remove_card(index, card)
 				my_cards.pop_at(index)
 				return
 			index += 1
 		return
 	for i in player_order:
 		if i == player_id:
-			Aload.decks[index].remove_card(0)
+			player_decks[index].remove_card(0, card)
 			return
 		index += 1
 

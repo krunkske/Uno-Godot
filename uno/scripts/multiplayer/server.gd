@@ -31,7 +31,6 @@ func start_game():
 	for player in playerNames:
 		player_order.append(player.id)
 		player_cards.append({"id": player.id, "cards": []})
-
 	for player in player_cards:
 		give_cards(player.id, 7)
 		Aload.client_node.start_game.rpc_id(player.id, player.cards, mid_pile[-1], player_order)
@@ -63,23 +62,22 @@ func play_card(index):
 				special_att(cards.cards[index])
 				mid_pile.append(cards.cards[index])
 				Aload.current_focussed_card = null
-				cards.cards.pop_at(index)
-				
 				Aload.client_node.played_card.rpc(cards.id, cards.cards[index])
+				cards.cards.pop_at(index)
 
 func next_player_turn():
 	var skip = 1
-	var next_player = Aload.player_turn_index
-	if Aload.reverse_direction:
+	var next_player = current_player_pos
+	if direction_switched:
 		skip = -1
-	if Aload.skip_next_turn:
+	if skip_next_turn_var:
 		skip *= 2
-		Aload.skip_next_turn = false
+		skip_next_turn_var = false
 	
 	next_player += skip
-	if Aload.player_turn_index == 4:
+	if current_player_pos == len(player_order):
 		next_player = 0
-	elif Aload.player_turn_index == -1:
+	elif current_player_pos == -1:
 		next_player = 3
 	
 	return next_player
@@ -90,7 +88,7 @@ func special_att(card_type):
 	elif card_type.x == switch:
 		change_direction()
 	elif card_type.x == plus2:
-		give_cards(Aload.players[next_player_turn()],2)
+		give_cards(player_order[next_player_turn()],2)
 	elif card_type.x == switch_color:
 		if card_type.y == 4:
 			give_cards(Aload.players[next_player_turn()],4)
@@ -129,7 +127,6 @@ func get_index_from_card(player, card):
 
 func card_valid(card_type):
 	var current_card = mid_pile[-1]
-	print(current_card)
 	if card_type.x <= 12 and card_type.y == current_card.y:
 		return true
 	elif card_type.x == current_card.x:
