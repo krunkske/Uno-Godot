@@ -6,6 +6,7 @@ var tween3
 
 var card_value
 var playing_anim = false
+var active = true
 
 var rng = RandomNumberGenerator.new()
 
@@ -29,6 +30,8 @@ func set_playing_anim():
 	playing_anim = false
 
 func bop_up():
+	if not active:
+		return
 	#playing_anim = true
 	if tween1:
 		tween1.kill()
@@ -46,6 +49,8 @@ func bop_up():
 	#tween1.tween_callback(set_playing_anim)
 
 func bop_down():
+	if not active:
+		return
 	#playing_anim = true
 	#self.set_z_index(0)
 	if tween1:
@@ -64,6 +69,8 @@ func bop_down():
 	#tween1.tween_callback(set_playing_anim)
 
 func go_to_middle():
+	if not active:
+		return
 	playing_anim = true
 	if tween1:
 		tween1.kill()
@@ -82,6 +89,7 @@ func go_to_middle():
 	tween2.tween_property(self, "scale", Vector2(1, 1), 0.5)
 	tween3.tween_property(self, "rotation_degrees", rng.randi_range(-10, 10), 0.5)
 	self.set_z_index(len(Aload.client_node.mid_pile))
+	active = false
 
 func _on_area_2d_mouse_entered() -> void:
 	if my_card and not playing_anim:
@@ -106,4 +114,4 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 				break
 			index += 1
 	elif event.is_action_pressed("LmouseButton") and Aload.current_focussed_card == self and top_card:
-		Aload.main.give_card(Aload.player1, 1)
+		Aload.server_node.ask_for_card.rpc_id(1)

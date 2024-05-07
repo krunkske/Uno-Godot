@@ -7,6 +7,7 @@ var player_order = []
 var player_cards = [] #[{"id": -1, "cards": vector2i(0, 2), vector2i(2, 6), ...}] example
 
 var current_player_pos = 0
+var current_player_id = -1
 
 var direction_switched = false
 var skip_next_turn_var = false
@@ -34,6 +35,9 @@ func start_game():
 	for player in player_cards:
 		give_cards(player.id, 7)
 		Aload.client_node.start_game.rpc_id(player.id, player.cards, mid_pile[-1], player_order)
+	
+	current_player_pos = 0
+	current_player_id = player_order[0]
 
 
 func give_cards(id, amount):
@@ -41,6 +45,7 @@ func give_cards(id, amount):
 		if cards.id == id:
 			for j in range(amount):
 				cards.cards.append(random_card())
+				Aload.client_node.sync_cards.rpc(cards.id, [Vector2i(0, 4)])
 
 
 
@@ -51,19 +56,33 @@ func random_card():
 	if number == 14:
 		type = 4
 		number = 13
-	return Vector2i(number, type)
+	return Vector2i(number, type)  
 
 
 @rpc("any_peer", "call_remote", "reliable")
 func play_card(index):
-	for cards in player_cards:
-		if cards.id == multiplayer.get_remote_sender_id():
-			if card_valid(cards.cards[index]):
-				special_att(cards.cards[index])
-				mid_pile.append(cards.cards[index])
-				Aload.current_focussed_card = null
-				Aload.client_node.played_card.rpc(cards.id, cards.cards[index])
-				cards.cards.pop_at(index)
+	if current_player_id == multiplayer.get_remote_sender_id():
+		for cards in player_cards:
+			if cards.id == multiplayer.get_remote_sender_id():
+				if card_valid(cards.cards[index]):
+					special_att(cards.cards[index])
+					mid_pile.append(cards.cards[index])
+					Aload.current_focussed_card = null
+					Aload.client_node.played_card.rpc(cards.id, cards.cards[index])
+					cards.cards.pop_at(index)
+					current_player_pos = next_player_turn()
+
+@rpc("any_peer", "call_remote", "reliable")
+func ask_for_card():
+	if current_player_id == multiplayer.get_remote_sender_id():
+		var card = random_card()
+		for i in player_cards:
+			if i.id == multiplayer.get_remote_sender_id():
+				i.cards.append(card)
+		Aload.client_node.recieve_cards.rpc_id(multiplayer.get_remote_sender_id(), multiplayer.get_remote_sender_id(), [card])
+		
+		Aload.client_node.sync_cards.rpc(multiplayer.get_remote_sender_id(), [Vector2i(0, 4)])
+		current_player_pos = next_player_turn()
 
 func next_player_turn():
 	var skip = 1
@@ -75,10 +94,12 @@ func next_player_turn():
 		skip_next_turn_var = false
 	
 	next_player += skip
-	if current_player_pos == len(player_order):
+	if next_player == len(player_order):
 		next_player = 0
-	elif current_player_pos == -1:
+	elif next_player == -1:
 		next_player = 3
+	
+	current_player_id = player_order[next_player]
 	
 	return next_player
 
@@ -91,7 +112,7 @@ func special_att(card_type):
 		give_cards(player_order[next_player_turn()],2)
 	elif card_type.x == switch_color:
 		if card_type.y == 4:
-			give_cards(Aload.players[next_player_turn()],4)
+			give_cards(player_order[next_player_turn()],4)
 		change_color("red")
 
 func change_color(color):

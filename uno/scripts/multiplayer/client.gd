@@ -18,13 +18,11 @@ func _ready() -> void:
 func start_game(cards, pile_up_card, order):
 	Aload.pile_up.get_node("next_card").set_frame_coords(pile_up_card)
 	player_order = order
+	current_player_pos = 0
 	for card in cards:
 		my_cards.append(card)
 		Aload.deck1.add_card(card)
 	
-	for i in range(1, len(order)):
-		for j in range(7):
-			Aload.decks[i].add_card(Vector2i(0, 4))
 	assing_player_decks()
 
 func assing_player_decks():
@@ -55,13 +53,22 @@ func assing_player_decks():
 
 		other_index += 1
 
-#CHECK THESE AGAIN
+@rpc("authority", "call_local", "reliable")
+func sync_cards(player_id, cards):
+	var index = 0
+	if player_id == multiplayer.get_unique_id():
+		return
+	for i in player_order:
+		if i == player_id:
+			for card in cards:
+				player_decks[index].add_card(card)
+		index += 1
+
 @rpc("authority", "call_local", "reliable")
 func recieve_cards(player_id, cards):
-	for i in Aload.players:
-		if i.id == player_id:
-			for j in cards:
-				i.cards.append(cards)
+	for card in cards:
+		my_cards.append(card)
+		Aload.deck1.add_card(card)
 
 @rpc("authority", "call_local", "reliable")
 func played_card(player_id, card):
