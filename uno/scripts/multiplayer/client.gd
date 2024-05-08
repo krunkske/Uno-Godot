@@ -19,9 +19,10 @@ func start_game(cards, pile_up_card, order):
 	Aload.pile_up.get_node("next_card").set_frame_coords(pile_up_card)
 	player_order = order
 	current_player_pos = 0
-	for card in cards:
-		my_cards.append(card)
-		Aload.deck1.add_card(card)
+	
+	for i in range(len(player_order) - 1):
+		for j in range(7):
+			Aload.decks[i + 1].add_card(Vector2i(0, 4))
 	
 	assing_player_decks()
 
@@ -65,7 +66,7 @@ func sync_cards(player_id, cards):
 		index += 1
 
 @rpc("authority", "call_local", "reliable")
-func recieve_cards(player_id, cards):
+func recieve_cards(cards):
 	for card in cards:
 		my_cards.append(card)
 		Aload.deck1.add_card(card)

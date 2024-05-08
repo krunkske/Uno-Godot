@@ -7,6 +7,7 @@ extends Node
 @onready var gui_node = main.get_node("GUI")
 @onready var info_gui = gui_node.get_node("info_gui")
 @onready var info_node = info_gui.get_node("VBoxContainer").get_node("info")
+@onready var color_switch_menu = gui_node.get_node("color_switch_menu")
 
 #server and client node
 @onready var server_node = null

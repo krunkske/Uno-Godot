@@ -110,7 +110,10 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 		var index = 0
 		for i in Aload.client_node.my_cards:
 			if i == Aload.current_focussed_card.get_frame_coords():
-				Aload.server_node.play_card.rpc_id(1, index)
+				if i.x == 13:
+					Aload.color_switch_menu.choose_color(index)
+				else:
+					Aload.server_node.play_card.rpc_id(1, index, "COLOR")
 				break
 			index += 1
 	elif event.is_action_pressed("LmouseButton") and Aload.current_focussed_card == self and top_card:

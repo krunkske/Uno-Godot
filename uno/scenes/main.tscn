@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://mavmups1w1rr"]
+[gd_scene load_steps=8 format=3 uid="uid://mavmups1w1rr"]
 
 [ext_resource type="Script" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
 [ext_resource type="PackedScene" uid="uid://w4k43bp3ecot" path="res://scenes/pile_up.tscn" id="2_fsj4h"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bxp7oom05334p" path="res://scenes/player_deck.tscn" id="2_uhpk0"]
 [ext_resource type="PackedScene" uid="uid://c0pm8x4sewfic" path="res://scenes/lobby_ui.tscn" id="5_r7eh0"]
 [ext_resource type="PackedScene" uid="uid://bjktxdg7x3ico" path="res://scenes/info_gui.tscn" id="6_25lth"]
+[ext_resource type="PackedScene" uid="uid://p5mjswomuwe4" path="res://scenes/color_switch_menu.tscn" id="7_t7xh8"]
 
 [node name="main" type="Node"]
 script = ExtResource("1_lwx3j")
@@ -43,3 +44,5 @@ anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
 grow_horizontal = 2
+
+[node name="color_switch_menu" parent="GUI" instance=ExtResource("7_t7xh8")]

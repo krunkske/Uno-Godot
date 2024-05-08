@@ -28,14 +28,15 @@ func _ready() -> void:
 
 #sets up the game, sends all the players their cards, the top pile card and the player order
 func start_game():
-	mid_pile.append(random_card())
+	mid_pile.append(valid_mid_pile())
 	for player in playerNames:
 		player_order.append(player.id)
 		player_cards.append({"id": player.id, "cards": []})
 	for player in player_cards:
 		give_cards(player.id, 7)
-		Aload.client_node.start_game.rpc_id(player.id, player.cards, mid_pile[-1], player_order)
 	
+	for player in player_cards:
+		Aload.client_node.start_game.rpc_id(player.id, player.cards, mid_pile[-1], player_order)
 	current_player_pos = 0
 	current_player_id = player_order[0]
 
@@ -45,9 +46,15 @@ func give_cards(id, amount):
 		if cards.id == id:
 			for j in range(amount):
 				cards.cards.append(random_card())
+				Aload.client_node.recieve_cards.rpc_id(id, [cards.cards[-1]])
 				Aload.client_node.sync_cards.rpc(cards.id, [Vector2i(0, 4)])
 
-
+func valid_mid_pile():
+	var card = random_card()
+	if card.x > 9:
+		return valid_mid_pile()
+	else:
+		return card
 
 #change so probabillity is better/more accurate
 func random_card():
@@ -60,14 +67,13 @@ func random_card():
 
 
 @rpc("any_peer", "call_remote", "reliable")
-func play_card(index):
+func play_card(index, color):
 	if current_player_id == multiplayer.get_remote_sender_id():
 		for cards in player_cards:
 			if cards.id == multiplayer.get_remote_sender_id():
 				if card_valid(cards.cards[index]):
-					special_att(cards.cards[index])
+					special_att(cards.cards[index], color)
 					mid_pile.append(cards.cards[index])
-					Aload.current_focussed_card = null
 					Aload.client_node.played_card.rpc(cards.id, cards.cards[index])
 					cards.cards.pop_at(index)
 					current_player_pos = next_player_turn()
@@ -94,16 +100,16 @@ func next_player_turn():
 		skip_next_turn_var = false
 	
 	next_player += skip
-	if next_player == len(player_order):
-		next_player = 0
-	elif next_player == -1:
-		next_player = 3
+	if next_player >= len(player_order):
+		next_player -= len(player_order)
+	elif next_player <= -1:
+		next_player += len(player_order)
 	
 	current_player_id = player_order[next_player]
 	
 	return next_player
 
-func special_att(card_type):
+func special_att(card_type, color):
 	if card_type.x == skip:
 		skip_next_turn()
 	elif card_type.x == switch:
@@ -113,18 +119,18 @@ func special_att(card_type):
 	elif card_type.x == switch_color:
 		if card_type.y == 4:
 			give_cards(player_order[next_player_turn()],4)
-		change_color("red")
+		change_color(color)
 
 func change_color(color):
 	match color:
 		"red":
-			mid_pile[-1] = Vector2i(0, 13)
+			mid_pile[-1] = Vector2i(13, red)
 		"yellow":
-			mid_pile[-1] = Vector2i(1, 13)
+			mid_pile[-1] = Vector2i(13, yellow)
 		"green":
-			mid_pile[-1] = Vector2i(2, 13)
+			mid_pile[-1] = Vector2i(13, green)
 		"blue":
-			mid_pile[-1] = Vector2i(4, 13)
+			mid_pile[-1] = Vector2i(13, blue)
 
 func change_direction():
 	if not direction_switched:
