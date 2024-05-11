@@ -26,7 +26,7 @@ func _ready():
 
 func create_client(ip_address):
 	if ip_address == "" or OS.get_name() == "Web":
-		ip_address = "FILL IN LATER"
+		ip_address = "wss://1238900430327517204.discordsays.com/server"
 	else:
 		ip_address = ip_address + ":" + str(PORT)
 	
@@ -94,10 +94,10 @@ func _player_disconnected(_id):
 		print(str(_id) + " disconnected")
 		connected -= 1
 		var counter = 0
-		for i in Aload.players:
+		for i in Aload.server_node.playerNames:
 			if i.id == _id:
-				Aload.players.pop_at(counter)
-				print(Aload.players)
+				Aload.server_node.playerNames.pop_at(counter)
+				print(Aload.server_node.playerNames)
 				return
 			counter += 1
 			

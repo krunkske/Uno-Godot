@@ -23,7 +23,11 @@ Lobby="*res://scripts/multiplayer/lobby.gd"
 
 [display]
 
+window/size/viewport_width=1280
+window/size/viewport_height=720
 window/size/resizable=false
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [input]
 
@@ -36,3 +40,8 @@ LmouseButton={
 [layer_names]
 
 2d_render/layer_2="focused_card"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

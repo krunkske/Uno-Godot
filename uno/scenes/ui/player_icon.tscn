@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3 uid="uid://bd41hcfe6l32x"]
+
+[ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_flu8s"]
+[ext_resource type="Texture2D" uid="uid://bdttxj8u0w3jw" path="res://icon.svg" id="2_7hk7n"]
+[ext_resource type="Script" path="res://scripts/singe_scripts/player_icon.gd" id="2_lnhiq"]
+
+[node name="player_icon" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = -0.940002
+offset_bottom = 0.940002
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_flu8s")
+script = ExtResource("2_lnhiq")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -64.0
+offset_top = -88.5
+offset_right = 64.0
+offset_bottom = 88.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="icon" type="TextureRect" parent="VBoxContainer"]
+layout_mode = 2
+texture = ExtResource("2_7hk7n")
+
+[node name="username" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Player 1"

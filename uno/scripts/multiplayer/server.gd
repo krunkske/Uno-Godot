@@ -38,6 +38,7 @@ func start_game():
 	for player in player_cards:
 		Aload.client_node.start_game.rpc_id(player.id, player.cards, mid_pile[-1], player_order)
 	current_player_pos = 0
+	Aload.client_node.recieve_next_player_turn.rpc(current_player_pos)
 	current_player_id = player_order[0]
 
 
@@ -72,11 +73,12 @@ func play_card(index, color):
 		for cards in player_cards:
 			if cards.id == multiplayer.get_remote_sender_id():
 				if card_valid(cards.cards[index]):
-					special_att(cards.cards[index], color)
 					mid_pile.append(cards.cards[index])
+					special_att(cards.cards[index], color)
 					Aload.client_node.played_card.rpc(cards.id, cards.cards[index])
 					cards.cards.pop_at(index)
 					current_player_pos = next_player_turn()
+					check_for_win()
 
 @rpc("any_peer", "call_remote", "reliable")
 func ask_for_card():
@@ -85,10 +87,18 @@ func ask_for_card():
 		for i in player_cards:
 			if i.id == multiplayer.get_remote_sender_id():
 				i.cards.append(card)
-		Aload.client_node.recieve_cards.rpc_id(multiplayer.get_remote_sender_id(), multiplayer.get_remote_sender_id(), [card])
+		Aload.client_node.recieve_cards.rpc_id(multiplayer.get_remote_sender_id(), [card])
 		
 		Aload.client_node.sync_cards.rpc(multiplayer.get_remote_sender_id(), [Vector2i(0, 4)])
 		current_player_pos = next_player_turn()
+		check_for_win()
+
+
+func check_for_win():
+	Aload.client_node.recieve_next_player_turn.rpc(current_player_pos)
+	for player in player_cards:
+		if player.cards == []:
+			Aload.client_node.win_or_lose.rpc(player.id)
 
 func next_player_turn():
 	var skip = 1
@@ -122,15 +132,23 @@ func special_att(card_type, color):
 		change_color(color)
 
 func change_color(color):
+	print(color)
 	match color:
 		"red":
 			mid_pile[-1] = Vector2i(13, red)
+			print("changed to red")
 		"yellow":
 			mid_pile[-1] = Vector2i(13, yellow)
+			print("changed to yellow")
 		"green":
 			mid_pile[-1] = Vector2i(13, green)
+			print("changed to green")
 		"blue":
 			mid_pile[-1] = Vector2i(13, blue)
+			print("changed to blue")
+		_:
+			print("no color found!!!!!")
+	print(mid_pile[-1])
 
 func change_direction():
 	if not direction_switched:
@@ -154,6 +172,9 @@ func get_index_from_card(player, card):
 
 func card_valid(card_type):
 	var current_card = mid_pile[-1]
+	print(current_card)
+	print(card_type.x)
+	print(card_type.y)
 	if card_type.x <= 12 and card_type.y == current_card.y:
 		return true
 	elif card_type.x == current_card.x:

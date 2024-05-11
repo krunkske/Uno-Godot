@@ -29,7 +29,7 @@ func _on_join_pressed():
 	if $"Panel/VBoxContainer/HBoxContainer2/ip-adress".get_text():
 		Lobby.playerName = $Panel/VBoxContainer/HBoxContainer2/name.get_text()
 		if not Lobby.create_client($"Panel/VBoxContainer/HBoxContainer2/ip-adress".get_text()):
-			Aload.top_gui.get_node("Label").set_text("Could not connect to server.")
+			Aload.info_node.set_text("Could not connect to server.")
 		else:
 			create_tweens()
 

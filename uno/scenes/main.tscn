@@ -1,43 +1,75 @@
-[gd_scene load_steps=8 format=3 uid="uid://mavmups1w1rr"]
+[gd_scene load_steps=13 format=3 uid="uid://mavmups1w1rr"]
 
 [ext_resource type="Script" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
+[ext_resource type="Shader" path="res://assets/shaders/background.gdshader" id="2_a1og4"]
 [ext_resource type="PackedScene" uid="uid://w4k43bp3ecot" path="res://scenes/pile_up.tscn" id="2_fsj4h"]
 [ext_resource type="PackedScene" uid="uid://bqgxagm81ux1" path="res://scenes/pile_down.tscn" id="2_t8fnk"]
 [ext_resource type="PackedScene" uid="uid://bxp7oom05334p" path="res://scenes/player_deck.tscn" id="2_uhpk0"]
+[ext_resource type="PackedScene" uid="uid://k8dpwqw0blmc" path="res://scenes/win_screen.tscn" id="5_gwy4j"]
 [ext_resource type="PackedScene" uid="uid://c0pm8x4sewfic" path="res://scenes/lobby_ui.tscn" id="5_r7eh0"]
 [ext_resource type="PackedScene" uid="uid://bjktxdg7x3ico" path="res://scenes/info_gui.tscn" id="6_25lth"]
 [ext_resource type="PackedScene" uid="uid://p5mjswomuwe4" path="res://scenes/color_switch_menu.tscn" id="7_t7xh8"]
+[ext_resource type="PackedScene" uid="uid://bd41hcfe6l32x" path="res://scenes/ui/player_icon.tscn" id="10_olps8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hyl6w"]
+shader = ExtResource("2_a1og4")
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_11rs5"]
 
 [node name="main" type="Node"]
 script = ExtResource("1_lwx3j")
 
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 0.298039, 0.239216, 0.654902)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_hyl6w")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("CanvasTexture_11rs5")
+
 [node name="player1_deck" parent="." instance=ExtResource("2_uhpk0")]
 position = Vector2(609, 537)
+scale = Vector2(0.3, 0.3)
 my_cards = true
 
 [node name="player2_deck" parent="." instance=ExtResource("2_uhpk0")]
 position = Vector2(119, 302)
 rotation = 1.57607
+scale = Vector2(0.3, 0.3)
 
 [node name="player3_deck" parent="." instance=ExtResource("2_uhpk0")]
 position = Vector2(601, 98)
 rotation = -1.55882
+scale = Vector2(0.3, 0.3)
 
 [node name="player4_deck" parent="." instance=ExtResource("2_uhpk0")]
 position = Vector2(993, 327)
 rotation = -3.12565
+scale = Vector2(0.3, 0.3)
 
 [node name="pile_down" parent="." instance=ExtResource("2_t8fnk")]
 position = Vector2(550, 293)
-scale = Vector2(0.4, 0.4)
+scale = Vector2(0.3, 0.3)
 
 [node name="pile_up" parent="." instance=ExtResource("2_fsj4h")]
 position = Vector2(678, 293)
-scale = Vector2(0.4, 0.4)
+scale = Vector2(0.3, 0.3)
 
 [node name="GUI" type="Node" parent="."]
 
+[node name="win_screen" parent="GUI" instance=ExtResource("5_gwy4j")]
+
 [node name="lobby_UI" parent="GUI" instance=ExtResource("5_r7eh0")]
+scale = Vector2(0.7, 0.7)
 
 [node name="info_gui" parent="GUI" instance=ExtResource("6_25lth")]
 anchors_preset = 5
@@ -46,3 +78,17 @@ anchor_right = 0.5
 grow_horizontal = 2
 
 [node name="color_switch_menu" parent="GUI" instance=ExtResource("7_t7xh8")]
+
+[node name="player_icons" type="Node" parent="."]
+
+[node name="player_icon1" parent="player_icons" instance=ExtResource("10_olps8")]
+
+[node name="player_icon2" parent="player_icons" instance=ExtResource("10_olps8")]
+
+[node name="player_icon3" parent="player_icons" instance=ExtResource("10_olps8")]
+
+[node name="player_icon4" parent="player_icons" instance=ExtResource("10_olps8")]
+offset_left = 599.0
+offset_top = 433.0
+offset_right = 599.28
+offset_bottom = 432.72

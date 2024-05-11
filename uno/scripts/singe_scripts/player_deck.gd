@@ -6,16 +6,24 @@ var crad_scene = load("res://scenes/card.tscn")
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if my_cards:
-		for i in self.get_children():
+		for i in get_cards():
 			i.my_card = true
 	else:
-		for i in self.get_children():
+		for i in get_cards():
 			i.set_frame_coords(Vector2i(0, 4))
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+func get_cards():
+	var children = self.get_children()
+	var return_children = []
+	for child in children:
+		if not child.is_in_group("non_cards"):
+			return_children.append(child)
+	return return_children
 
 func add_card(type):
 	var card = crad_scene.instantiate()
@@ -27,20 +35,21 @@ func add_card(type):
 	rearrange_cards()
 
 func remove_card(index, type):
-	var cards = self.get_children()
+	var cards = get_cards()
 	var Index = 0
 	for card in cards:
-		if index == Index:
-			card.go_to_middle()
-			card.set_frame_coords(type)
-			card.reparent(Aload.pile_up)
-			rearrange_cards()
-			return
-		Index += 1
+		if not card.is_in_group("non_cards"):
+			if index == Index:
+				card.go_to_middle()
+				card.set_frame_coords(type)
+				card.reparent(Aload.pile_up)
+				rearrange_cards()
+				return
+			Index += 1
 
 
 func rearrange_cards():
-	var cards = self.get_children()
+	var cards = get_cards()
 	var card_len = len(cards)
 	var tweens_move = []
 	var tweens_rotate = []
