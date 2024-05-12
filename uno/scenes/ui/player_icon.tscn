@@ -1,8 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://bd41hcfe6l32x"]
+[gd_scene load_steps=5 format=3 uid="uid://bd41hcfe6l32x"]
 
 [ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_flu8s"]
 [ext_resource type="Texture2D" uid="uid://bdttxj8u0w3jw" path="res://icon.svg" id="2_7hk7n"]
 [ext_resource type="Script" path="res://scripts/singe_scripts/player_icon.gd" id="2_lnhiq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_p5mkx"]
+font_size = 36
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
 
 [node name="player_icon" type="Control"]
 layout_mode = 3
@@ -34,11 +39,15 @@ offset_right = 64.0
 offset_bottom = 88.5
 grow_horizontal = 2
 grow_vertical = 2
+alignment = 1
 
 [node name="icon" type="TextureRect" parent="VBoxContainer"]
 layout_mode = 2
 texture = ExtResource("2_7hk7n")
+stretch_mode = 3
 
 [node name="username" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "Player 1"
+text = "Connecting..."
+label_settings = SubResource("LabelSettings_p5mkx")
+horizontal_alignment = 1

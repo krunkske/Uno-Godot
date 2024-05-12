@@ -59,11 +59,24 @@ func valid_mid_pile():
 
 #change so probabillity is better/more accurate
 func random_card():
-	var type = rng.randi_range(0,3) #includes 0 and 3
-	var number = rng.randi_range(0, 14)
-	if number == 14:
+	var type = 0
+	var number = 0
+	var chance = rng.randi_range(1, 27)
+	if chance >= 1 and chance <= 10:
+		type = rng.randi_range(0,3) #includes 0 and 3
+		number = rng.randi_range(0, 9)
+	elif chance >= 11 and chance <= 21:
+		type = rng.randi_range(0,3)
+		number = rng.randi_range(10, 12)
+	elif chance >= 22 and chance <= 25:
+		type = 0
+		number = 13
+	elif chance >= 26 and chance <= 27:
 		type = 4
 		number = 13
+	else:
+		print("chance number is fucked up!!!!!")
+		print(chance)
 	return Vector2i(number, type)  
 
 
@@ -79,6 +92,8 @@ func play_card(index, color):
 					cards.cards.pop_at(index)
 					current_player_pos = next_player_turn()
 					check_for_win()
+					if len(cards.cards) == 1:
+						Aload.client_node.start_uno_timer.rpc_id(cards.id)
 
 @rpc("any_peer", "call_remote", "reliable")
 func ask_for_card():
@@ -93,6 +108,9 @@ func ask_for_card():
 		current_player_pos = next_player_turn()
 		check_for_win()
 
+@rpc("any_peer", "call_remote", "reliable")
+func missed_uno():
+	give_cards(multiplayer.get_remote_sender_id(), 2)
 
 func check_for_win():
 	Aload.client_node.recieve_next_player_turn.rpc(current_player_pos)
@@ -135,16 +153,16 @@ func change_color(color):
 	print(color)
 	match color:
 		"red":
-			mid_pile[-1] = Vector2i(13, red)
+			mid_pile[-1] = Vector2i(13, 0)
 			print("changed to red")
 		"yellow":
-			mid_pile[-1] = Vector2i(13, yellow)
+			mid_pile[-1] = Vector2i(13, 1)
 			print("changed to yellow")
 		"green":
-			mid_pile[-1] = Vector2i(13, green)
+			mid_pile[-1] = Vector2i(13, 2)
 			print("changed to green")
 		"blue":
-			mid_pile[-1] = Vector2i(13, blue)
+			mid_pile[-1] = Vector2i(13, 3)
 			print("changed to blue")
 		_:
 			print("no color found!!!!!")
@@ -173,8 +191,7 @@ func get_index_from_card(player, card):
 func card_valid(card_type):
 	var current_card = mid_pile[-1]
 	print(current_card)
-	print(card_type.x)
-	print(card_type.y)
+	print(card_type)
 	if card_type.x <= 12 and card_type.y == current_card.y:
 		return true
 	elif card_type.x == current_card.x:

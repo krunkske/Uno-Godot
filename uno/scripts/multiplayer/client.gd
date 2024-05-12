@@ -6,6 +6,8 @@ var player_decks = []
 var my_cards = [] #[vector2i(0, 2), vector2i(2, 6), ...] example
 
 var prev_icon = null
+var uno_active = false
+var can_press_uno = true
 
 var current_player_pos = 0
 
@@ -15,9 +17,10 @@ var mid_pile = []
 func _ready() -> void:
 	Aload.client_node = self
 
-
 @rpc("authority", "call_local", "reliable")
 func start_game(cards, pile_up_card, order):
+	Aload.uno_button.set_visible(true)
+	Aload.info_node.text = ""
 	Aload.pile_up.get_node("next_card").set_frame_coords(pile_up_card)
 	player_order = order
 	current_player_pos = 0
@@ -27,25 +30,27 @@ func start_game(cards, pile_up_card, order):
 			Aload.decks[i + 1].add_card(Vector2i(0, 4))
 	
 	assing_player_decks()
-	
+	for i in Aload.player_icons_list:
+		i.fade_out()
 	var index = 0
-	var other_index = 0
-	
-	for i in player_decks:
-		match i.name:
-			"player1_deck":
-				other_index = 0
-			"player2_deck":
-				other_index = 1
-			"player3_deck":
-				other_index = 2
-			"player4_deck":
-				other_index = 3
-		
-		for j in playerNames:
-			if j.id == player_order[other_index]:
-				Aload.main.get_node("player_icons").get_node("player_icon" + str(other_index + 1)).get_node("VBoxContainer").get_node("username").text = j.name
-		index += 1
+	var player_icon_index = 0
+
+@rpc("authority", "call_remote", "reliable")
+func start_uno_timer():
+	print("started uno timer")
+	Aload.uno_button.get_node("Timer").start()
+	uno_active = true
+
+func pressed_uno():
+	if uno_active:
+		Aload.uno_button.get_node("Timer").stop()
+		uno_active = false
+		print("canceled uno")
+	elif can_press_uno:
+		Aload.server_node.missed_uno.rpc_id(1)
+		print("fucking donkey. Pressing buttons for no reason")
+		$Timer.start()
+		can_press_uno = false
 
 func assing_player_decks():
 	for i in player_order:
@@ -72,7 +77,10 @@ func assing_player_decks():
 			position = 0
 		
 		player_decks[position] = Aload.decks[other_index]
-
+		
+		
+		Aload.player_icons_list[other_index].get_node("VBoxContainer").get_node("username").text = playerNames[position].name
+		
 		other_index += 1
 
 @rpc("authority", "call_remote", "reliable")
@@ -144,3 +152,11 @@ func played_card(player_id, card):
 @rpc("authority", "call_local", "reliable")
 func recieve_players(users, authorized):
 	Aload.client_node.playerNames = users
+	Aload.player_icons_list[0].get_node("VBoxContainer").get_node("username").text = "You"
+	print(authorized)
+	if authorized:
+		Aload.info_gui.get_node("VBoxContainer").get_node("start").set_visible(true)
+
+
+func _on_timer_timeout() -> void:
+	can_press_uno = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://mavmups1w1rr"]
+[gd_scene load_steps=14 format=3 uid="uid://mavmups1w1rr"]
 
 [ext_resource type="Script" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
 [ext_resource type="Shader" path="res://assets/shaders/background.gdshader" id="2_a1og4"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://k8dpwqw0blmc" path="res://scenes/win_screen.tscn" id="5_gwy4j"]
 [ext_resource type="PackedScene" uid="uid://c0pm8x4sewfic" path="res://scenes/lobby_ui.tscn" id="5_r7eh0"]
 [ext_resource type="PackedScene" uid="uid://bjktxdg7x3ico" path="res://scenes/info_gui.tscn" id="6_25lth"]
+[ext_resource type="PackedScene" uid="uid://b7jocj5445xy2" path="res://scenes/ui/uno_button.tscn" id="7_sa5k7"]
 [ext_resource type="PackedScene" uid="uid://p5mjswomuwe4" path="res://scenes/color_switch_menu.tscn" id="7_t7xh8"]
 [ext_resource type="PackedScene" uid="uid://bd41hcfe6l32x" path="res://scenes/ui/player_icon.tscn" id="10_olps8"]
 
@@ -64,21 +65,6 @@ scale = Vector2(0.3, 0.3)
 position = Vector2(678, 293)
 scale = Vector2(0.3, 0.3)
 
-[node name="GUI" type="Node" parent="."]
-
-[node name="win_screen" parent="GUI" instance=ExtResource("5_gwy4j")]
-
-[node name="lobby_UI" parent="GUI" instance=ExtResource("5_r7eh0")]
-scale = Vector2(0.7, 0.7)
-
-[node name="info_gui" parent="GUI" instance=ExtResource("6_25lth")]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-grow_horizontal = 2
-
-[node name="color_switch_menu" parent="GUI" instance=ExtResource("7_t7xh8")]
-
 [node name="player_icons" type="Node" parent="."]
 
 [node name="player_icon1" parent="player_icons" instance=ExtResource("10_olps8")]
@@ -92,3 +78,24 @@ offset_left = 599.0
 offset_top = 433.0
 offset_right = 599.28
 offset_bottom = 432.72
+
+[node name="GUI" type="Node" parent="."]
+
+[node name="uno_button" parent="GUI" instance=ExtResource("7_sa5k7")]
+offset_left = 276.0
+offset_top = 281.0
+offset_right = 276.0
+offset_bottom = 281.0
+
+[node name="win_screen" parent="GUI" instance=ExtResource("5_gwy4j")]
+
+[node name="lobby_UI" parent="GUI" instance=ExtResource("5_r7eh0")]
+scale = Vector2(0.7, 0.7)
+
+[node name="info_gui" parent="GUI" instance=ExtResource("6_25lth")]
+anchors_preset = 5
+anchor_top = 0.0
+anchor_bottom = 0.0
+grow_vertical = 1
+
+[node name="color_switch_menu" parent="GUI" instance=ExtResource("7_t7xh8")]

@@ -81,13 +81,18 @@ func _player_connected(_id):
 @rpc("authority", "call_remote", "reliable")
 func server_full():
 	print("server full.")
+	Aload.reset()
+	Aload.info_node.text = "Server was full"
 
 func _connected_ok():
 	_register_player.rpc_id(1, playerName)
 	print("sucessfully connected to server")
+	Aload.info_node.text = "Connected to server"
 
 func _connected_fail():
 	print("connection failed.")
+	Aload.reset()
+	Aload.info_node.text = "connection failed"
 
 func _player_disconnected(_id):
 	if multiplayer.is_server():
@@ -98,14 +103,37 @@ func _player_disconnected(_id):
 			if i.id == _id:
 				Aload.server_node.playerNames.pop_at(counter)
 				print(Aload.server_node.playerNames)
-				return
+				break
 			counter += 1
+		
+		counter = 0
+		for i in Aload.server_node.player_order:
+			if i == _id:
+				Aload.server_node.playerNames.pop_at(counter)
+				break
+			counter += 1
+		
+		counter = 0
+		for i in Aload.server_node.player_cards:
+			if i.id == _id:
+				Aload.server_node.player_cards.pop_at(counter)
+				break
+			counter += 1
+		if connected == 0:
+			print("lobby empty, clearing")
+			Aload.client_node.queue_free()
+			Aload.server_node.queue_free()
 			
+			var server = server_node.instantiate()
+			Aload.main.add_child(server)
+	
+			var client = client_node.instantiate()
+			Aload.main.add_child(client)
 
 func _server_disconnected():
 	print("server disconnected.")
 	Aload.reset()
-	Aload.info_node.set_text("Server disconnected")
+	Aload.info_node.text = "Server disconnected"
 
 
 #registers a new player and adds it to the list of players
@@ -113,7 +141,9 @@ func _server_disconnected():
 @rpc("any_peer", "call_remote", "reliable")
 func _register_player(username):
 	Aload.server_node.playerNames.append({"id": multiplayer.get_remote_sender_id(), "name": username})
+	print(connected)
 	if connected == 1 and Aload.headless:
+		print("is master")
 		Aload.authorized = multiplayer.get_remote_sender_id()
 		Aload.client_node.recieve_players.rpc(Aload.server_node.playerNames, true)
 	else:

@@ -35,3 +35,12 @@ func bop_out():
 	tween = get_tree().create_tween()
 	tween.set_trans(Tween.TRANS_LINEAR)
 	tween.tween_property(self, "scale", Vector2(0.5,0.5), 0.5)
+
+
+func fade_out():
+	if $VBoxContainer/username.text == "Connecting...":
+		if tween:
+			tween.kill()
+		tween = get_tree().create_tween()
+		tween.set_trans(Tween.TRANS_BACK)
+		tween.tween_property(self, "scale", Vector2(0,0), 0.75)

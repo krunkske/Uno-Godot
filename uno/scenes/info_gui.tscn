@@ -1,23 +1,46 @@
-[gd_scene load_steps=2 format=3 uid="uid://bjktxdg7x3ico"]
+[gd_scene load_steps=3 format=3 uid="uid://bjktxdg7x3ico"]
 
 [ext_resource type="Script" path="res://scripts/singe_scripts/info_gui.gd" id="1_nskn4"]
+[ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_vaena"]
 
 [node name="info_gui" type="Control"]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_vaena")
 script = ExtResource("1_nskn4")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -32.0
+offset_top = -4.0
+offset_right = 14.0
+offset_bottom = 54.0
+grow_horizontal = 2
+alignment = 1
 
 [node name="info" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "info"
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+self_modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
 
 [node name="start" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
 text = "Start"
 
 [connection signal="pressed" from="VBoxContainer/start" to="." method="_on_start_pressed"]

@@ -17,6 +17,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func reset():
+	for i in get_cards():
+		i.queue_free()
+
 func get_cards():
 	var children = self.get_children()
 	var return_children = []

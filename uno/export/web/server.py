@@ -3,6 +3,8 @@ import socketserver
 
 # Define the port you want to use
 PORT = 8000
+# Define the IP address
+IP_ADDRESS = "127.0.0.1"
 
 # Define the handler for the server
 class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -14,8 +16,12 @@ class MyHttpRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         super().do_GET()
 
+# Create a custom HTTP server class by mixing in ThreadingMixIn
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+    pass
+
 # Set up the server
-with socketserver.TCPServer(("", PORT), MyHttpRequestHandler) as httpd:
-    print("Serving at port", PORT)
+with ThreadedHTTPServer((IP_ADDRESS, PORT), MyHttpRequestHandler) as httpd:
+    print("Serving at address", IP_ADDRESS, "and port", PORT)
     # Start the server
     httpd.serve_forever()
