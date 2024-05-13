@@ -12,6 +12,7 @@ var current_player_id = -1
 var direction_switched = false
 var skip_next_turn_var = false
 var mid_pile = []
+var sender = -1
 
 #common numbers
 var red = 0
@@ -40,6 +41,8 @@ func start_game():
 	current_player_pos = 0
 	Aload.client_node.recieve_next_player_turn.rpc(current_player_pos)
 	current_player_id = player_order[0]
+	
+	$Timer.start()
 
 
 func give_cards(id, amount):
@@ -61,17 +64,20 @@ func valid_mid_pile():
 func random_card():
 	var type = 0
 	var number = 0
-	var chance = rng.randi_range(1, 27)
-	if chance >= 1 and chance <= 10:
+	var chance = rng.randi_range(1, 25)
+	if chance >= 1 and chance <= 15:
 		type = rng.randi_range(0,3) #includes 0 and 3
 		number = rng.randi_range(0, 9)
-	elif chance >= 11 and chance <= 21:
+	elif chance >= 16 and chance <= 21:
 		type = rng.randi_range(0,3)
-		number = rng.randi_range(10, 12)
-	elif chance >= 22 and chance <= 25:
+		number = rng.randi_range(10, 13)
+		if number == 13:
+			type += 4
+			number = 1
+	elif chance >= 22 and chance <= 23:
 		type = 0
 		number = 13
-	elif chance >= 26 and chance <= 27:
+	elif chance >= 24 and chance <= 25:
 		type = 4
 		number = 13
 	else:
@@ -82,6 +88,7 @@ func random_card():
 
 @rpc("any_peer", "call_remote", "reliable")
 func play_card(index, color):
+	sender = multiplayer.get_remote_sender_id()
 	if current_player_id == multiplayer.get_remote_sender_id():
 		for cards in player_cards:
 			if cards.id == multiplayer.get_remote_sender_id():
@@ -94,6 +101,7 @@ func play_card(index, color):
 					check_for_win()
 					if len(cards.cards) == 1:
 						Aload.client_node.start_uno_timer.rpc_id(cards.id)
+
 
 @rpc("any_peer", "call_remote", "reliable")
 func ask_for_card():
@@ -148,21 +156,25 @@ func special_att(card_type, color):
 		if card_type.y == 4:
 			give_cards(player_order[next_player_turn()],4)
 		change_color(color)
+	elif card_type.x == 1 and card_type.y > 3:
+		for i in player_order:
+			if i != sender:
+				give_cards(i, 1)
 
-func change_color(color):
+func change_color(color): #this shit is messed up
 	print(color)
 	match color:
 		"red":
-			mid_pile[-1] = Vector2i(13, 0)
+			mid_pile.append(Vector2i(13, 0))
 			print("changed to red")
 		"yellow":
-			mid_pile[-1] = Vector2i(13, 1)
+			mid_pile.append(Vector2i(13, 1))
 			print("changed to yellow")
 		"green":
-			mid_pile[-1] = Vector2i(13, 2)
+			mid_pile.append(Vector2i(13, 2))
 			print("changed to green")
 		"blue":
-			mid_pile[-1] = Vector2i(13, 3)
+			mid_pile.append(Vector2i(13, 3))
 			print("changed to blue")
 		_:
 			print("no color found!!!!!")
@@ -190,8 +202,12 @@ func get_index_from_card(player, card):
 
 func card_valid(card_type):
 	var current_card = mid_pile[-1]
-	print(current_card)
-	print(card_type)
+	if card_type.y > 3:
+		card_type.y -= 4
+	if current_card.y > 3:
+		current_card.y -=4
+	print("current_card: " + str(current_card))
+	print("card_type: " + str(card_type))
 	if card_type.x <= 12 and card_type.y == current_card.y:
 		return true
 	elif card_type.x == current_card.x:
@@ -199,3 +215,11 @@ func card_valid(card_type):
 	elif card_type.x == 13:
 		return true
 	return false
+
+@rpc("any_peer", "call_remote", "reliable")
+func pong():
+	#print(str(multiplayer.get_remote_sender_id()) + " is still alive")
+	pass
+
+func _on_timer_timeout() -> void:
+	Aload.client_node.ping.rpc()

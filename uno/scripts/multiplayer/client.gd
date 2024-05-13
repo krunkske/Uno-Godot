@@ -36,6 +36,11 @@ func start_game(cards, pile_up_card, order):
 	var player_icon_index = 0
 
 @rpc("authority", "call_remote", "reliable")
+func ping():
+	Aload.server_node.pong.rpc_id(1)
+
+
+@rpc("authority", "call_remote", "reliable")
 func start_uno_timer():
 	print("started uno timer")
 	Aload.uno_button.get_node("Timer").start()

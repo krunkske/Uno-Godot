@@ -42,11 +42,10 @@ extends Node
 @onready var headless = false
 
 func reset():
+	lobby_ui.fade_in()
 	color_switch_menu.set_visible(false)
-	lobby_ui.set_visible(true)
-	lobby_ui.get_node("Panel").size = Vector2(1, 1)
 	info_gui.get_node("VBoxContainer").get_node("start").set_visible(false)
-	multiplayer.multiplayer_peer = null
+	multiplayer.multiplayer_peer.close()
 	authorized = 1
 	current_focussed_card = null
 	uno_button.get_node("Timer").stop()

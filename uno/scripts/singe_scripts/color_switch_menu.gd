@@ -35,5 +35,5 @@ func _on_yellow_pressed() -> void:
 
 
 func _on_green_pressed() -> void:
-	Aload.server_node.play_card.rpc_id(1, index, "yellow")
+	Aload.server_node.play_card.rpc_id(1, index, "green")
 	self.set_visible(false)

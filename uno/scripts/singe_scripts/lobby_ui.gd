@@ -20,10 +20,20 @@ func _process(delta):
 	pass
 
 func create_tweens():
+	if tween:
+		tween.kill()
 	tween = get_tree().create_tween()
 	tween.set_trans(Tween.TRANS_SPRING)
 	tween.tween_property($Panel, "scale", Vector2(0,0), 0.4)
 	tween.tween_callback(self.hide)
+
+func fade_in():
+	self.show()
+	if tween:
+		tween.kill()
+	tween = get_tree().create_tween()
+	tween.set_trans(Tween.TRANS_SPRING)
+	tween.tween_property($Panel, "scale", Vector2(1,1), 0.4)
 
 func _on_join_pressed():
 	if $"Panel/VBoxContainer/HBoxContainer2/ip-adress".get_text():
