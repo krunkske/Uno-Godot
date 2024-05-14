@@ -13,7 +13,6 @@ func _process(delta: float) -> void:
 
 
 func choose_color(dex):
-	print("did shit")
 	self.set_visible(true)
 	index = dex
 	

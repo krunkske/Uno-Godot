@@ -55,31 +55,32 @@ func give_cards(id, amount):
 
 func valid_mid_pile():
 	var card = random_card()
-	if card.x > 9:
-		return valid_mid_pile()
-	else:
+	print(card)
+	if card.x <= 9 and card.y <= 3:
 		return card
+	else:
+		return valid_mid_pile()
 
 #change so probabillity is better/more accurate
 func random_card():
 	var type = 0
 	var number = 0
-	var chance = rng.randi_range(1, 25)
+	var chance = rng.randi_range(1, 23)
 	if chance >= 1 and chance <= 15:
 		type = rng.randi_range(0,3) #includes 0 and 3
 		number = rng.randi_range(0, 9)
-	elif chance >= 16 and chance <= 21:
+	elif chance >= 16 and chance <= 20:
 		type = rng.randi_range(0,3)
 		number = rng.randi_range(10, 13)
 		if number == 13:
 			type += 4
 			number = 1
-	elif chance >= 22 and chance <= 23:
-		type = 0
-		number = 13
-	elif chance >= 24 and chance <= 25:
-		type = 4
-		number = 13
+	elif chance == 21 or chance == 22:
+		type = 5
+		number = 0
+	elif chance == 23:
+		type = 6
+		number = 0
 	else:
 		print("chance number is fucked up!!!!!")
 		print(chance)
@@ -94,8 +95,8 @@ func play_card(index, color):
 			if cards.id == multiplayer.get_remote_sender_id():
 				if card_valid(cards.cards[index]):
 					mid_pile.append(cards.cards[index])
-					special_att(cards.cards[index], color)
-					Aload.client_node.played_card.rpc(cards.id, cards.cards[index])
+					var att = special_att(cards.cards[index], color)
+					Aload.client_node.played_card.rpc(cards.id, att)
 					cards.cards.pop_at(index)
 					current_player_pos = next_player_turn()
 					check_for_win()
@@ -127,15 +128,15 @@ func check_for_win():
 			Aload.client_node.win_or_lose.rpc(player.id)
 
 func next_player_turn():
-	var skip = 1
+	var skip_turn = 1
 	var next_player = current_player_pos
 	if direction_switched:
-		skip = -1
+		skip_turn = -1
 	if skip_next_turn_var:
-		skip *= 2
+		skip_turn *= 2
 		skip_next_turn_var = false
 	
-	next_player += skip
+	next_player += skip_turn
 	if next_player >= len(player_order):
 		next_player -= len(player_order)
 	elif next_player <= -1:
@@ -152,14 +153,41 @@ func special_att(card_type, color):
 		change_direction()
 	elif card_type.x == plus2:
 		give_cards(player_order[next_player_turn()],2)
-	elif card_type.x == switch_color:
-		if card_type.y == 4:
-			give_cards(player_order[next_player_turn()],4)
+	elif card_type.x == 0 and card_type.y == 5:
+		Aload.client_node.change_color.rpc(color, true)
 		change_color(color)
+		var coords = Vector2i(13, 0)
+		match color:
+			"red":
+				coords.y = 0
+			"yellow":
+				coords.y = 1
+			"green":
+				coords.y = 2
+			"blue":
+				coords.y = 3
+		return coords
+	elif card_type.x == 0 and card_type.y == 6:
+		give_cards(player_order[next_player_turn()],4)
+		Aload.client_node.change_color.rpc(color, false)
+		change_color(color)
+		var coords = Vector2i(13, 0)
+		match color:
+			"red":
+				coords.y = 4
+			"yellow":
+				coords.y = 5
+			"green":
+				coords.y = 6
+			"blue":
+				coords.y = 7
+		return coords
 	elif card_type.x == 1 and card_type.y > 3:
 		for i in player_order:
 			if i != sender:
 				give_cards(i, 1)
+	
+	return card_type
 
 func change_color(color): #this shit is messed up
 	print(color)
@@ -202,6 +230,11 @@ func get_index_from_card(player, card):
 
 func card_valid(card_type):
 	var current_card = mid_pile[-1]
+	if card_type.x == 0 and card_type.y == 5:
+		return true
+	elif card_type.x == 0 and card_type.y == 6:
+		return true
+	
 	if card_type.y > 3:
 		card_type.y -= 4
 	if current_card.y > 3:

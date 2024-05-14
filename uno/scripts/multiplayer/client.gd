@@ -32,18 +32,23 @@ func start_game(cards, pile_up_card, order):
 	assing_player_decks()
 	for i in Aload.player_icons_list:
 		i.fade_out()
-	var index = 0
-	var player_icon_index = 0
 
 @rpc("authority", "call_remote", "reliable")
 func ping():
 	Aload.server_node.pong.rpc_id(1)
+
+@rpc("authority", "call_remote", "reliable")
+func change_color(color, normal):
+	Aload.color = color
+
 
 
 @rpc("authority", "call_remote", "reliable")
 func start_uno_timer():
 	print("started uno timer")
 	Aload.uno_button.get_node("Timer").start()
+	Aload.uno_button.active = true
+	Aload.uno_button.start_bobbing()
 	uno_active = true
 
 func pressed_uno():
@@ -140,9 +145,16 @@ func recieve_cards(cards):
 func played_card(player_id, card):
 	var index = 0
 	if player_id == multiplayer.get_unique_id():
+		var prev_card = card
+		if card.x == 13:
+			if card.y > 3:
+				card = Vector2i(0, 6)
+			else:
+				card = Vector2i(0, 5)
 		for i in my_cards:
+			print(i)
 			if i == card:
-				Aload.deck1.remove_card(index, card)
+				Aload.deck1.remove_card(index, prev_card)
 				my_cards.pop_at(index)
 				return
 			index += 1
@@ -158,7 +170,6 @@ func played_card(player_id, card):
 func recieve_players(users, authorized):
 	Aload.client_node.playerNames = users
 	Aload.player_icons_list[0].get_node("VBoxContainer").get_node("username").text = "You"
-	print(authorized)
 	if authorized:
 		Aload.info_gui.get_node("VBoxContainer").get_node("start").set_visible(true)
 

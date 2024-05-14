@@ -110,9 +110,11 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 		var index = 0
 		for i in Aload.client_node.my_cards:
 			Aload.info_node.text = str(Aload.current_focussed_card.get_frame_coords())
-			print(Aload.current_focussed_card.get_frame_coords())
+			print(i)
 			if i == Aload.current_focussed_card.get_frame_coords():
-				if i.x == 13:
+				if i.x == 0 and i.y == 5:
+					Aload.color_switch_menu.choose_color(index)
+				elif i.x == 0 and i.y == 6:
 					Aload.color_switch_menu.choose_color(index)
 				else:
 					Aload.server_node.play_card.rpc_id(1, index, "COLOR")

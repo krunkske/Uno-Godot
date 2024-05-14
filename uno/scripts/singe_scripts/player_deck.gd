@@ -44,9 +44,9 @@ func remove_card(index, type):
 	for card in cards:
 		if not card.is_in_group("non_cards"):
 			if index == Index:
+				card.reparent(Aload.pile_up)
 				card.go_to_middle()
 				card.set_frame_coords(type)
-				card.reparent(Aload.pile_up)
 				rearrange_cards()
 				return
 			Index += 1

@@ -35,7 +35,7 @@ extends Node
 
 #current focussed card
 @onready var current_focussed_card = null
-
+@onready var color = ""
 
 #multiplayer stuff
 @onready var authorized = 1
