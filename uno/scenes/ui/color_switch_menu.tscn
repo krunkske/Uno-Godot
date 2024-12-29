@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://p5mjswomuwe4"]
 
 [ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_3dwqd"]
-[ext_resource type="Script" path="res://scripts/singe_scripts/color_switch_menu.gd" id="1_dpnoj"]
+[ext_resource type="Script" uid="uid://48rac17qtkka" path="res://scripts/singe_scripts/color_switch_menu.gd" id="1_dpnoj"]
 
 [node name="color_switch_menu" type="Control"]
 layout_mode = 3
@@ -30,22 +30,23 @@ columns = 2
 
 [node name="blue" type="Button" parent="GridContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 text = "Blue"
 
 [node name="red" type="Button" parent="GridContainer"]
 layout_mode = 2
 text = "Red"
 
-[node name="yellow" type="Button" parent="GridContainer"]
-layout_mode = 2
-text = "Yellow
-"
-
 [node name="green" type="Button" parent="GridContainer"]
 layout_mode = 2
+size_flags_vertical = 4
 text = "Green"
+
+[node name="yellow" type="Button" parent="GridContainer"]
+layout_mode = 2
+text = "Yellow"
 
 [connection signal="pressed" from="GridContainer/blue" to="." method="_on_blue_pressed"]
 [connection signal="pressed" from="GridContainer/red" to="." method="_on_red_pressed"]
-[connection signal="pressed" from="GridContainer/yellow" to="." method="_on_yellow_pressed"]
 [connection signal="pressed" from="GridContainer/green" to="." method="_on_green_pressed"]
+[connection signal="pressed" from="GridContainer/yellow" to="." method="_on_yellow_pressed"]

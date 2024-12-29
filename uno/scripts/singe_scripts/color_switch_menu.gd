@@ -6,33 +6,26 @@ var index = -1
 func _ready() -> void:
 	self.hide()
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-
 func choose_color(dex):
-	self.set_visible(true)
+	self.show()
 	index = dex
-	
 
 
 func _on_blue_pressed() -> void:
 	Aload.server_node.play_card.rpc_id(1, index, "blue")
-	self.set_visible(false)
+	self.hide()
 
 
 func _on_red_pressed() -> void:
 	Aload.server_node.play_card.rpc_id(1, index, "red")
-	self.set_visible(false)
+	self.hide()
 
 
 func _on_yellow_pressed() -> void:
 	Aload.server_node.play_card.rpc_id(1, index, "yellow")
-	self.set_visible(false)
+	self.hide()
 
 
 func _on_green_pressed() -> void:
 	Aload.server_node.play_card.rpc_id(1, index, "green")
-	self.set_visible(false)
+	self.hide()

@@ -1,5 +1,7 @@
 shader_type canvas_item;
 
+uniform float speed = 1.0;
+
 void fragment() {
     float aspect = (1.0 / SCREEN_PIXEL_SIZE).y / (1.0 / SCREEN_PIXEL_SIZE).x;
     float value;
@@ -23,8 +25,8 @@ void fragment() {
     float dist = 2.0 * min(min(rep.x, 1.0 - rep.x), min(rep.y, 1.0 - rep.y));
     float squareDist = length((floor(pos) + vec2(0.5)) - vec2(5.0));
 
-    float edge = sin(TIME/2.0 - squareDist * 0.5) * 0.5 + 0.5;
-    edge = (TIME/2.0 - squareDist * 0.5) * 0.5;
+    float edge = sin(TIME*speed - squareDist * 0.5) * 0.5 + 0.5;
+    edge = (TIME*speed - squareDist * 0.5) * 0.5;
     edge = 2.0 * fract(edge * 0.5);
 
     value = fract(dist * 2.0);
@@ -33,6 +35,6 @@ void fragment() {
     value = smoothstep(edge - 0.05, edge, 0.95 * value);
     value += squareDist * 0.2;
 
-    COLOR = mix(vec4(1.0, 1.0, 1.0, 1.0), vec4(0.5, 0.75, 1.0, 1.0), value);
+    COLOR = mix(vec4(1.0, 1.0, 1.0, 1.0), vec4(0.2, 0.2, 1.0, 1.0), value);
     COLOR.a = 0.1 * clamp(value, 0.0, 0.75);
 }
