@@ -6,6 +6,11 @@ var playerNames := [] #[{"id": -1, "name": "player1"}] example
 var player_order := []
 var player_cards := [] #[{"id": -1, "cards": vector2i(0, 2), vector2i(2, 6), ...}] example
 
+## 0-12 Red, 0-12 Yellow, 0-12 Green, 0-12 Blue
+## 4 change color, 4 plus_4
+## 4 plus_1 all colors
+var deck := []
+
 var current_player_pos := 0
 var current_player_id := -1
 
@@ -17,7 +22,7 @@ var sender := -1
 
 #common numbers
 ## RED = 0, YELLOW = 1, GREEN = 2, BLUE = 3
-enum colors {RED, YELLOW, GREEN, BLUE}
+enum colors {RED, YELLOW, GREEN, BLUE, NONE = -1}
 ## PLUS1 = 1, SKIP = 10, SWITCH = 11, PLUS2 = 12, SWITCH_COLOR = 13
 enum card_actions {PLUS1 = 1, SKIP = 10, SWITCH = 11, PLUS2 = 12, SWITCH_COLOR = 13}
 
@@ -49,9 +54,9 @@ func get_index_from_card(player, card):
 			return index
 		index += 1
 
-
 #sets up the game, sends all the players their cards, the top pile card and the player order
 func start_game():
+	fill_deck()
 	mid_pile.append(random_card(true)) #first card cannot be a special card
 	for player in playerNames:
 		player_order.append(player.id)
@@ -68,6 +73,17 @@ func start_game():
 	
 	$Timer.start()
 
+##Will fill up the deck with all possible cards
+func fill_deck() -> void:
+	deck = []
+	for color in range(0, 4): #4 is not included
+		for card in range(0, 13): #13 not included
+			deck.append(Vector2i(card, color))
+	for special_card in range(0, 4): #4 not included
+		deck.append(Vector2i(card_actions.PLUS1, special_card))
+		deck.append(PLUS_4_CARD)
+		deck.append(CHANGE_COLOR_CARD)
+
 ## Gives a specified amount of random cards to a player.
 func give_cards(id, amount) -> void:
 	var cards = player_cards[get_cards_pos_from_id(id)]
@@ -76,10 +92,20 @@ func give_cards(id, amount) -> void:
 		Aload.client_node.recieve_cards.rpc_id(id, [cards.cards[-1]])
 		Aload.client_node.sync_cards.rpc(cards.id, [Vector2i(0, 4)])
 
-
 #TODO: change so probabillity is better/more accurate
 ## Returns a random card. No_special_cards can be used to only return 0-9 cards from all colors
 func random_card(no_special_cards := false) -> Vector2i:
+	if deck != []:
+		var len_deck := len(deck) - 1
+		var random_pos = rng.randi_range(0, len_deck)
+		var card : Vector2i = deck[random_pos]
+		deck.pop_at(random_pos)
+		return card
+	
+	printerr("Ran out of cards!")
+	return EMPTY_CARD
+	
+	"""
 	var chance_of_card = randi_range(0, 15) #all types of cards
 	if no_special_cards:
 		chance_of_card = randi_range(0, 9)
@@ -99,7 +125,6 @@ func random_card(no_special_cards := false) -> Vector2i:
 	printerr("Random_card failed. Giving empty card. Please check!!")
 	return EMPTY_CARD
 	
-	"""
 	var type = 0
 	var number = 0
 	var chance = rng.randi_range(1, 23)
@@ -123,23 +148,23 @@ func random_card(no_special_cards := false) -> Vector2i:
 		print(chance)
 	return Vector2i(number, type)"""
 
-
 @rpc("any_peer", "call_remote", "reliable")
-func play_card(index, color):
+func play_card(index: int, color := colors.NONE) -> void:
 	sender = multiplayer.get_remote_sender_id()
 	if current_player_id != multiplayer.get_remote_sender_id():
 		return
 	var cards = player_cards[get_cards_pos_from_id(sender)]
-	if card_valid(cards.cards[index]):
-		mid_pile.append(cards.cards[index])
-		var att = special_att(cards.cards[index], color)
+	var card : Vector2i = cards.cards[index]
+	if card_valid(card):
+		mid_pile.append(card)
+		deck.append(card)
+		var att = special_att(card, color)
 		cards.cards.pop_at(index)
 		Aload.client_node.played_card.rpc(cards.id, att)
 		current_player_pos = next_player_turn()
 		check_for_win()
 		if len(cards.cards) == 1:
 			Aload.client_node.start_uno_timer.rpc_id(cards.id)
-
 
 @rpc("any_peer", "call_remote", "reliable")
 func ask_for_card():
@@ -167,7 +192,7 @@ func check_for_win():
 		if player.cards == []:
 			Aload.client_node.win_or_lose.rpc(player.id)
 
-## Used for calculating the nexts player turn
+## Used for calculating the nexts player turn, can be called multiple times per turn.
 func next_player_turn() -> int:
 	var next_turn := 1
 	var next_player_pos := current_player_pos
@@ -187,88 +212,65 @@ func next_player_turn() -> int:
 	
 	return next_player_pos
 
-func special_att(card, color):
+func special_att(card: Vector2i, color: int):
 	if card.x == card_actions.SKIP:
 		skip_next_turn != skip_next_turn
 	elif card.x == card_actions.SWITCH:
 		direction_switched != direction_switched
 	elif card.x == card_actions.PLUS2:
 		give_cards(player_order[next_player_turn()],2)
-	elif card.x == 0 and card.y == 5:
-		Aload.client_node.change_color.rpc(color, true)
-		change_color(color)
-		var coords = Vector2i(13, 0)
-		match color:
-			"red":
-				coords.y = 0
-			"yellow":
-				coords.y = 1
-			"green":
-				coords.y = 2
-			"blue":
-				coords.y = 3
-		return coords
-	elif card.x == 0 and card.y == 6:
-		give_cards(player_order[next_player_turn()],4)
-		Aload.client_node.change_color.rpc(color, false)
-		change_color(color)
-		var coords = Vector2i(13, 0)
-		match color:
-			"red":
-				coords.y = 4
-			"yellow":
-				coords.y = 5
-			"green":
-				coords.y = 6
-			"blue":
-				coords.y = 7
-		return coords
-	elif card.x == 1 and card.y > 3:
+	elif card.x == card_actions.PLUS1 and card.y > 3:
 		for i in player_order:
 			if i != sender:
 				give_cards(i, 1)
+	elif card == CHANGE_COLOR_CARD or card == PLUS_4_CARD:
+		Aload.client_node.change_color.rpc(color)
+		var coords = Vector2i(13, 0)
+		if color != colors.NONE:
+			change_color(color)
+			coords.y = color
+		if card == PLUS_4_CARD:
+			give_cards(player_order[next_player_turn()],4)
+		return coords
 	
 	return card
 
-func change_color(color): #this shit is messed up
-	print(color)
-	match color:
-		"red":
-			mid_pile.append(Vector2i(13, colors.RED))
-			print("changed to red")
-		"yellow":
-			mid_pile.append(Vector2i(13, colors.YELLOW))
-			print("changed to yellow")
-		"green":
-			mid_pile.append(Vector2i(13, colors.GREEN))
-			print("changed to green")
-		"blue":
-			mid_pile.append(Vector2i(13, colors.BLUE))
-			print("changed to blue")
-		_:
-			print("no color found!!!!!")
+func change_color(color: int):
+	mid_pile.append(Vector2i(13, color))
 	print(mid_pile[-1])
 
-
-func card_valid(card_type):
-	var current_card = mid_pile[-1]
-	if card_type.x == 0 and card_type.y == 5:
+func card_valid(card: Vector2i):
+	var current_card : Vector2i = mid_pile[-1]
+	if card == EMPTY_CARD:
+		printerr("Card is an empty card!! Returning True!!")
 		return true
-	elif card_type.x == 0 and card_type.y == 6:
+	if card == CHANGE_COLOR_CARD:
+		return true
+	elif card == PLUS_4_CARD:
 		return true
 	
-	if card_type.y > 3:
-		card_type.y -= 4
+	if card.y > 3:
+		card.y -= 4
 	if current_card.y > 3:
 		current_card.y -=4
+	
+	if card.y == current_card.y:
+		return true
+	if card.x == current_card.x:
+		return true
+	
+	if card.x == 13: #Dunno if this check is actually needed
+		return true
+	"""
 	print("current_card: " + str(current_card))
-	print("card_type: " + str(card_type))
-	if card_type.x <= 12 and card_type.y == current_card.y:
+	print("card_type: " + str(card))
+	if card.x <= 12 and card.y == current_card.y:
 		return true
-	elif card_type.x == current_card.x:
-		return true
-	elif card_type.x == 13:
-		return true
+	elif card.x == current_card.x:
+		return true"""
+	
+	print("Card " + str(card) + " is invalid.")
+	
 	return false
 
 @rpc("any_peer", "call_remote", "reliable")

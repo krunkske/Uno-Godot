@@ -3,6 +3,7 @@ extends Node
 #the ENTIRE infrastructure has to be changed from peer to peer to server
 #good luck!
 #I did it! Yay!
+#aaand were refactoring everything lol. Good luck again!
 
 var client_node = preload("res://scenes/client.tscn")
 var server_node = preload("res://scenes/server.tscn")
@@ -33,7 +34,7 @@ func create_client(ip_address):
 	peer = WebSocketMultiplayerPeer.new()
 	var err = peer.create_client(ip_address)
 	if err != OK:
-		print(err)
+		printerr(err)
 		return false
 	
 	multiplayer.multiplayer_peer = peer
@@ -50,12 +51,12 @@ func create_server():
 	peer = WebSocketMultiplayerPeer.new()
 	var err = peer.create_server(int(PORT))
 	if err != OK:
-		print(err)
+		printerr(err)
 		match err:
 			22:
-				print("could not create server. Another server is already running")
+				printerr("could not create server. Another server is already running")
 			_:
-				print("could not create server.")
+				printerr("could not create server.")
 		#reset func
 		return
 	
@@ -136,8 +137,8 @@ func _server_disconnected():
 	Aload.info_node.text = "Server disconnected"
 
 
-#registers a new player and adds it to the list of players
-#called only on the serevr
+##registers a new player and adds it to the list of players
+##called only on the serevr
 @rpc("any_peer", "call_remote", "reliable")
 func _register_player(username):
 	Aload.server_node.playerNames.append({"id": multiplayer.get_remote_sender_id(), "name": username})

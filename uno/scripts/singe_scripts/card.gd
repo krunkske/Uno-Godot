@@ -10,7 +10,7 @@ var active = true
 
 var rng = RandomNumberGenerator.new()
 
-@export var base_pos = Vector2(0,0)
+@export var base_pos = Vector2i(0,0)
 @export var my_card = false
 @export var top_card = false
 
@@ -117,7 +117,7 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 				elif i.x == 0 and i.y == 6:
 					Aload.color_switch_menu.choose_color(index)
 				else:
-					Aload.server_node.play_card.rpc_id(1, index, "COLOR")
+					Aload.server_node.play_card.rpc_id(1, index)
 				break
 			index += 1
 	elif event.is_action_pressed("LmouseButton") and Aload.current_focussed_card == self and top_card:
