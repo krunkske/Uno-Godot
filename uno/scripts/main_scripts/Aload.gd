@@ -5,9 +5,7 @@ extends Node
 @onready var pile_up := main.get_node("pile_up")
 
 @onready var gui_node := main.get_node("GUI")
-@onready var info_gui := gui_node.get_node("info_gui")
 @onready var lobby_ui := gui_node.get_node("lobby_UI")
-@onready var info_node := info_gui.get_node("VBoxContainer").get_node("info")
 @onready var color_switch_menu := gui_node.get_node("color_switch_menu")
 @onready var win_screen := gui_node.get_node("win_screen")
 @onready var uno_button := gui_node.get_node("uno_button")
@@ -20,10 +18,6 @@ extends Node
 @onready var player_icon4 := player_icons.get_node("player_icon4")
 
 @onready var player_icons_list := [player_icon1, player_icon2, player_icon3, player_icon4]
-
-#server and client node
-@onready var server_node : Node = null
-@onready var client_node : Node = null
 
 #the 4 player decks
 @onready var deck1 := main.get_node("player1_deck")
@@ -43,14 +37,10 @@ extends Node
 
 func reset():
 	lobby_ui.fade_in()
-	color_switch_menu.set_visible(false)
-	info_gui.get_node("VBoxContainer").get_node("start").set_visible(false)
+	color_switch_menu.hide()
 	multiplayer.multiplayer_peer.close()
 	authorized = 1
 	current_focussed_card = null
 	uno_button.get_node("Timer").stop()
 	for i in decks:
 		i.reset()
-	
-	client_node.queue_free()
-	server_node.queue_free()
