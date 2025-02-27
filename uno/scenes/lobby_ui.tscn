@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://c0pm8x4sewfic"]
 
-[ext_resource type="Script" path="res://scripts/singe_scripts/lobby_ui.gd" id="1_mpjhf"]
+[ext_resource type="Script" uid="uid://dmhoocud8rigj" path="res://scripts/singe_scripts/lobby_ui.gd" id="1_mpjhf"]
 [ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_pjmqm"]
 
 [node name="lobby_UI" type="Control"]

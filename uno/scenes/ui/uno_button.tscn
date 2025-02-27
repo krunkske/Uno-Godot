@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://b7jocj5445xy2"]
 
 [ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_8yh6k"]
-[ext_resource type="Script" path="res://scripts/singe_scripts/uno_button.gd" id="2_4h8j6"]
+[ext_resource type="Script" uid="uid://6abkcfquubwh" path="res://scripts/singe_scripts/uno_button.gd" id="2_4h8j6"]
 
 [node name="uno_button" type="Control"]
 layout_mode = 3

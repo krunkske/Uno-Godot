@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://k8dpwqw0blmc"]
 
 [ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_60grr"]
-[ext_resource type="Script" path="res://scripts/singe_scripts/win_screen.gd" id="1_hv4tb"]
+[ext_resource type="Script" uid="uid://ck8qwemk7w57q" path="res://scripts/singe_scripts/win_screen.gd" id="1_hv4tb"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_m2e23"]
 font_size = 48

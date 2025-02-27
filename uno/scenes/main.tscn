@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=3 uid="uid://mavmups1w1rr"]
 
-[ext_resource type="Script" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
-[ext_resource type="Shader" path="res://assets/shaders/background.gdshader" id="2_a1og4"]
+[ext_resource type="Script" uid="uid://c272vb3ubko6j" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
+[ext_resource type="Shader" uid="uid://bamnvaw32dixt" path="res://assets/shaders/background.gdshader" id="2_a1og4"]
 [ext_resource type="PackedScene" uid="uid://w4k43bp3ecot" path="res://scenes/pile_up.tscn" id="2_fsj4h"]
 [ext_resource type="PackedScene" uid="uid://bqgxagm81ux1" path="res://scenes/pile_down.tscn" id="2_t8fnk"]
 [ext_resource type="PackedScene" uid="uid://bxp7oom05334p" path="res://scenes/player_deck.tscn" id="2_uhpk0"]

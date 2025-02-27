@@ -4,7 +4,8 @@ var screen_size
 
 
 func _ready() -> void:
-	if OS.has_feature("dedicated_server"):
+	if OS.has_feature("dedicated_server") or DisplayServer.get_name() == "headless":
+		print("server")
 		Aload.headless = true
 		Lobby.create_server()
 	else:
@@ -20,4 +21,3 @@ func _ready() -> void:
 		$player3_deck.rotation_degrees = 180
 		$player4_deck.position = Vector2(screen_size.x - 125, screen_size.y/2)
 		$player4_deck.rotation_degrees = -90
-
