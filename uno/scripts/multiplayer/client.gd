@@ -1,3 +1,4 @@
+@icon("res://addons/plenticons/icons/16x/2d/cross-gray.png")
 extends Node
 
 var playerNames := [] #[{"id": -1, "name": "player1"}] example

@@ -20,8 +20,8 @@ config/icon="res://assets/uno_logo.svg"
 
 Aload="*res://scripts/main_scripts/Aload.gd"
 Lobby="*res://scripts/multiplayer/lobby.gd"
-NewClient="res://scenes/multiplayer/new_client.tscn"
-NewServer="res://scenes/multiplayer/new_server.tscn"
+Client="*res://scenes/multiplayer/new_client.tscn"
+Server="*res://scenes/multiplayer/new_server.tscn"
 
 [display]
 

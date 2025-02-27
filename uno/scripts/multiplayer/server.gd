@@ -1,3 +1,4 @@
+@icon("res://addons/plenticons/icons/16x/2d/cross-gray.png")
 extends Node
 
 var rng = RandomNumberGenerator.new()
@@ -47,15 +48,18 @@ func get_cards_pos_from_id(id:int) -> int:
 		pos += 1
 	return -1
 
-func get_index_from_card(player, card):
+
+## Used for geting the index from where a card is in a players hand
+func get_index_from_card(player, card: Vector2) -> int:
 	var index := 0
 	for i in player.cards:
 		if i.card_node == card:
 			return index
 		index += 1
+	return NAN
 
-#sets up the game, sends all the players their cards, the top pile card and the player order
-func start_game():
+## Sets up the game, sends all the players their cards, the top pile card and the player order
+func start_game() -> void:
 	fill_deck()
 	mid_pile.append(random_card(true)) #first card cannot be a special card
 	for player in playerNames:
@@ -72,6 +76,7 @@ func start_game():
 	current_player_id = player_order[0]
 	
 	$Timer.start()
+
 
 ##Will fill up the deck with all possible cards
 func fill_deck() -> void:

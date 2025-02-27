@@ -1,3 +1,4 @@
+@icon("res://addons/plenticons/icons/16x/objects/coins-blue.png")
 extends Node
 
 var rng := RandomNumberGenerator.new()
@@ -100,7 +101,6 @@ func set_next_player_turn(skip_amount := 0) -> void:
 	active_player = player_data[new_active_player_pos].id
 
 #RPC FUNCS
-
 
 ## Called by: Player
 ## Get's called by any player who can play a card. If valid it will set the mid_card to that card

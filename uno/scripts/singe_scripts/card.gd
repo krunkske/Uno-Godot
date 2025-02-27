@@ -106,4 +106,4 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 					return
 			index += 1
 	else:
-		Aload.server_node.ask_for_card.rpc_id(1)
+		Server.ask_for_card.rpc_id(1)

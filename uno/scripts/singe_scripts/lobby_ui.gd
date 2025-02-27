@@ -13,9 +13,6 @@ func _ready():
 		$Panel/VBoxContainer/HBoxContainer/host.hide()
 		$Panel/VBoxContainer/HBoxContainer/VSeparator.hide()
 
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
 
@@ -42,7 +39,7 @@ func _on_join_pressed():
 			Aload.info_node.set_text("Could not connect to server.")
 		else:
 			create_tweens()
-			Aload.info_node.text = "Connecting to sever..."
+			#Aload.info_node.text = "Connecting to sever..."
 
 
 func _on_port_toggled(toggled_on):

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bhokiw6dks64a"]
 
-[ext_resource type="Script" path="res://scenes/multiplayer/new_client.gd" id="1_pgscl"]
+[ext_resource type="Script" uid="uid://csgoap1x05vmd" path="res://scenes/multiplayer/new_client.gd" id="1_pgscl"]
 
 [node name="new_client" type="Node"]
 script = ExtResource("1_pgscl")

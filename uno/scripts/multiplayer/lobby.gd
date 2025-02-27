@@ -5,7 +5,7 @@ extends Node
 #I did it! Yay!
 #aaand were refactoring everything lol. Good luck again!
 
-var PORT := 8080
+var PORT := 8000
 const MAX_CLIENTS := 4
 
 var peer : WebSocketMultiplayerPeer = null
@@ -22,10 +22,6 @@ func _ready():
 	multiplayer.server_disconnected.connect(self._server_disconnected)
 
 func create_client(ip_address := "127.0.0.1") -> bool:
-	"""if ip_address == "" or OS.get_name() == "Web":
-		ip_address = "wss://1238900430327517204.discordsays.com/server"
-	else:"""
-	
 	ip_address = ip_address + ":" + str(PORT)
 	
 	peer = WebSocketMultiplayerPeer.new()
@@ -37,7 +33,7 @@ func create_client(ip_address := "127.0.0.1") -> bool:
 	multiplayer.multiplayer_peer = peer
 	return true
 
-#hosting will be disabled and not included. only server-client, no peer-to-peer
+##Only server-client, no peer-to-peer!!
 func create_server() -> bool:
 	peer = WebSocketMultiplayerPeer.new()
 	var err := peer.create_server(int(PORT))
@@ -65,48 +61,35 @@ func _player_connected(_id: int) -> void:
 ##Client
 func _connected_ok() -> void:
 	_register_player.rpc_id(1, playerName)
-	print("Sucessfully amount_connected to server.")
-	Aload.info_node.text = "amount_connected to server."
+	print("Sucessfully connected to server.")
 
 ##Client
 func _connected_fail() -> void:
 	printerr("Connection failed.")
 	Aload.reset()
-	Aload.info_node.text = "Connection failed."
 
 ##All
-##THIS NEEDS MAJOR REWORKS!! TODO BUG
+##THIS NEEDS MAJOR REWORKS!!
+##DONE
 func _player_disconnected(_id) -> void:
 	if not multiplayer.is_server():
 		return
 	print("%s disconnected." %_id)
 	amount_connected -= 1
 	var counter := 0
-	for i in Aload.server_node.playerNames:
-		if i.id == _id:
-			Aload.server_node.playerNames.pop_at(counter)
-			print(Aload.server_node.playerNames)
-			break
+	var loopThings := [Server.player_data] #TODO add all required things here #DONE there is only playerData
+	for i in loopThings:
+		for item in i:
+			if item.id == _id:
+				i.pop_at(counter)
+				print(i)
+				break
 		counter += 1
-	
 	counter = 0
-	for i in Aload.server_node.player_order:
-		if i == _id:
-			Aload.server_node.playerNames.pop_at(counter)
-			break
-		counter += 1
-		
-	counter = 0
-	for i in Aload.server_node.player_cards:
-		if i.id == _id:
-			Aload.server_node.player_cards.pop_at(counter)
-			break
-		counter += 1
 
 func _server_disconnected() -> void:
 	print("Server closed.")
 	Aload.reset()
-	Aload.info_node.text = "Server closed."
 
 ##registers a new player and adds it to the list of players
 ##Server
@@ -114,21 +97,21 @@ func _server_disconnected() -> void:
 @rpc("any_peer", "call_remote", "reliable")
 func _register_player(username: String) -> void:
 	var id := multiplayer.get_remote_sender_id()
-	Aload.server_node.playerNames.append({"id": id, "name": username})
+	var newPlayer := {"id": id, "username": username, "order": -1, "cards": []}
+	Server.player_data.append(newPlayer)
 	print("%s players connected." %amount_connected)
 	if amount_connected == 1 and Aload.headless:
 		print("%s is master" %id)
 		Aload.authorized = id
-		Aload.client_node.recieve_players.rpc(Aload.server_node.playerNames, true)
+		#Client.recieve_players.rpc(Server.playerNames, true) #TODO make better and work
 	else:
-		Aload.client_node.recieve_players.rpc(Aload.server_node.playerNames, false)
+		Client.rpc(Server.playerNames, false)
 
 ##Client
 @rpc("authority", "call_remote", "reliable")
 func server_full() -> void:
 	print("Server full.")
 	Aload.reset()
-	Aload.info_node.text = "Server was full"
 
 ##Server
 ##NEEDS RENAMING TODO
