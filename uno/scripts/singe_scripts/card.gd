@@ -90,7 +90,7 @@ func _on_area_2d_mouse_exited() -> void:
 	if my_card and not playing_anim:
 		bop_down()
 
-
+## Rewrite this TODO
 func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
 	var can_play : bool = event.is_action_pressed("LmouseButton") and Aload.current_focussed_card == self
 	if can_play and not top_card:
