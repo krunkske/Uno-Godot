@@ -105,7 +105,8 @@ func _register_player(username: String) -> void:
 		Aload.authorized = id
 		#Client.recieve_players.rpc(Server.playerNames, true) #TODO make better and work
 	else:
-		Client.rpc(Server.playerNames, false)
+		pass
+		#Client.rpc(Server.playerNames, false)
 
 ##Client
 @rpc("authority", "call_remote", "reliable")
@@ -117,5 +118,5 @@ func server_full() -> void:
 ##NEEDS RENAMING TODO
 @rpc("any_peer", "call_remote", "reliable")
 func is_authorized() -> void:
-	if Aload.headless and multiplayer.get_remote_sender_id() == Aload.authorized:
-		Aload.server_node.start_game()
+	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == Aload.authorized:
+		Server.start_game()

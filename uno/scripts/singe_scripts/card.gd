@@ -2,7 +2,7 @@ extends Sprite2D
 
 var tweens : Array[Tween] = []
 
-var card_value
+var card_value: Vector2
 var playing_anim = false
 var active = true
 
@@ -90,8 +90,9 @@ func _on_area_2d_mouse_exited() -> void:
 	if my_card and not playing_anim:
 		bop_down()
 
-## Rewrite this TODO
+## Rewrite this TODO This should not handle verifying, only pass through to th Client node
 func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) -> void:
+	return ##BUG
 	var can_play : bool = event.is_action_pressed("LmouseButton") and Aload.current_focussed_card == self
 	if can_play and not top_card:
 		print("clicked %s" %card_value)

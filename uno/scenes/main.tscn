@@ -88,8 +88,10 @@ offset_right = 276.0
 offset_bottom = 281.0
 
 [node name="win_screen" parent="GUI" instance=ExtResource("5_gwy4j")]
+visible = false
 
 [node name="lobby_UI" parent="GUI" instance=ExtResource("5_r7eh0")]
 scale = Vector2(0.7, 0.7)
 
 [node name="color_switch_menu" parent="GUI" instance=ExtResource("7_t7xh8")]
+visible = false

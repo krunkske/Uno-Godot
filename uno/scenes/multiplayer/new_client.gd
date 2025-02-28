@@ -6,6 +6,7 @@ var active_player : int
 var mid_card : Vector2i
 
 ## Call this when the player wants to play a card
+## TODO does not take special cards into account
 func playCard(cardPos: int) -> bool:
 	Server.mid_card = mid_card #BE WARNED, don't know the exact concequences
 	if !Server.is_valid_card(myCards[cardPos]):
@@ -13,7 +14,7 @@ func playCard(cardPos: int) -> bool:
 	Server.play_card.rpc_id(1, cardPos)
 	return true
 
-func checkSpecialAtt(card: Vector2) -> Array[int, int]:
+func checkSpecialAtt(card: Vector2) -> Array[int]:
 	if card.x == card_types.card_actions.SKIP:
 		return [1, 0] # skip turn = 1
 	if card.x == card_types.card_actions.SWITCH:
