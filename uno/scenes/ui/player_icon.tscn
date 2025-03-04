@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://bmq24vi5uw0mq" path="res://assets/themes/default_theme.tres" id="1_flu8s"]
 [ext_resource type="Texture2D" uid="uid://bdttxj8u0w3jw" path="res://icon.svg" id="2_7hk7n"]
-[ext_resource type="Script" path="res://scripts/singe_scripts/player_icon.gd" id="2_lnhiq"]
+[ext_resource type="Script" uid="uid://daey3wmu30d7y" path="res://scripts/singe_scripts/player_icon.gd" id="2_lnhiq"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_p5mkx"]
 font_size = 36

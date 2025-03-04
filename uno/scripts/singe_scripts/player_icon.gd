@@ -1,14 +1,21 @@
 extends Control
 
-var screen_size
-var tween
-var tween2
+var screen_size : Vector2
+var tween : Tween
+var tween2 : Tween
 
-# Called when the node enters the scene tree for the first time.
+@export var username: String :
+	get:
+		return username
+	set(value):
+		username = value
+		$VBoxContainer/username.text = value
+
 func _ready() -> void:
 	screen_size = get_viewport().get_visible_rect().size
 	match name:
 		"player_icon1":
+			$VBoxContainer/username.text = "You"
 			global_position = Vector2(screen_size.x/2, screen_size.y - 225)
 		"player_icon2":
 			global_position = Vector2(225, screen_size.y/2)
@@ -17,10 +24,6 @@ func _ready() -> void:
 		"player_icon4":
 			global_position = Vector2(screen_size.x - 225, screen_size.y/2)
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 
 func bop_in():
 	if tween:

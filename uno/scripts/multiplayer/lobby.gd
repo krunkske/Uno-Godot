@@ -21,6 +21,8 @@ func _ready():
 	multiplayer.connection_failed.connect(self._connected_fail)
 	multiplayer.server_disconnected.connect(self._server_disconnected)
 
+
+## Creates a new client to be used as a player
 func create_client(ip_address := "127.0.0.1") -> bool:
 	ip_address = ip_address + ":" + str(PORT)
 	
@@ -34,6 +36,7 @@ func create_client(ip_address := "127.0.0.1") -> bool:
 	return true
 
 ##Only server-client, no peer-to-peer!!
+## Opens a new server
 func create_server() -> bool:
 	peer = WebSocketMultiplayerPeer.new()
 	var err := peer.create_server(int(PORT))
@@ -50,42 +53,37 @@ func create_server() -> bool:
 	return true
 
 ##All
+## Triggers on all clients and server when a new player connects
 func _player_connected(_id: int) -> void:
 	if multiplayer.is_server():
 		if amount_connected >= 4:
 			server_full.rpc_id(_id)
 			return
 		amount_connected += 1
-		print(str(_id) + " amount_connected")
+		print("SERVER: %s players connected" %amount_connected)
 
 ##Client
 func _connected_ok() -> void:
 	_register_player.rpc_id(1, playerName)
-	print("Sucessfully connected to server.")
+	print("CLIENT %s: Sucessfully connected to server." %multiplayer.get_unique_id())
 
 ##Client
 func _connected_fail() -> void:
-	printerr("Connection failed.")
+	printerr("CLIENT %s: Connection failed." %multiplayer.get_unique_id())
 	Aload.reset()
 
 ##All
-##THIS NEEDS MAJOR REWORKS!!
-##DONE
-func _player_disconnected(_id) -> void:
+func _player_disconnected(_id: int) -> void:
 	if not multiplayer.is_server():
 		return
-	print("%s disconnected." %_id)
+	print("SERVER: %s disconnected." %_id)
 	amount_connected -= 1
 	var counter := 0
-	var loopThings := [Server.player_data] #TODO add all required things here #DONE there is only playerData
-	for i in loopThings:
-		for item in i:
-			if item.id == _id:
-				i.pop_at(counter)
-				print(i)
-				break
+	for player in Server.player_data:
+		if player.id == _id:
+			Server.player_data.pop_at(counter)
+			break
 		counter += 1
-	counter = 0
 
 func _server_disconnected() -> void:
 	print("Server closed.")
@@ -93,20 +91,15 @@ func _server_disconnected() -> void:
 
 ##registers a new player and adds it to the list of players
 ##Server
-##NEEDS MIMOR REWORKS TODO
 @rpc("any_peer", "call_remote", "reliable")
 func _register_player(username: String) -> void:
 	var id := multiplayer.get_remote_sender_id()
-	var newPlayer := {"id": id, "username": username, "order": -1, "cards": []}
+	var newPlayer := {"id": id, "username": username, "cards": []}
 	Server.player_data.append(newPlayer)
-	print("%s players connected." %amount_connected)
-	if amount_connected == 1 and Aload.headless:
-		print("%s is master" %id)
+	print("SERVER: %s players connected." %amount_connected)
+	if amount_connected == 1:
+		print("SERVER: %s is master" %id)
 		Aload.authorized = id
-		#Client.recieve_players.rpc(Server.playerNames, true) #TODO make better and work
-	else:
-		pass
-		#Client.rpc(Server.playerNames, false)
 
 ##Client
 @rpc("authority", "call_remote", "reliable")
@@ -119,4 +112,4 @@ func server_full() -> void:
 @rpc("any_peer", "call_remote", "reliable")
 func is_authorized() -> void:
 	if multiplayer.is_server() and multiplayer.get_remote_sender_id() == Aload.authorized:
-		Server.start_game()
+		Server.startGame()

@@ -1,7 +1,7 @@
 extends Control
 
 func _ready() -> void:
-	$VBoxContainer/start.hide()
+	$VBoxContainer/start.show()
 
 
 func _on_start_pressed() -> void:

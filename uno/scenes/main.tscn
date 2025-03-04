@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://mavmups1w1rr"]
+[gd_scene load_steps=14 format=3 uid="uid://mavmups1w1rr"]
 
 [ext_resource type="Script" uid="uid://b13enjob6l3ml" path="res://scripts/main_scripts/main.gd" id="1_lwx3j"]
 [ext_resource type="Shader" uid="uid://dljgv876g5pp0" path="res://assets/shaders/background.gdshader" id="2_a1og4"]
@@ -6,10 +6,11 @@
 [ext_resource type="PackedScene" uid="uid://bqgxagm81ux1" path="res://scenes/pile_down.tscn" id="2_t8fnk"]
 [ext_resource type="PackedScene" uid="uid://bxp7oom05334p" path="res://scenes/player_deck.tscn" id="2_uhpk0"]
 [ext_resource type="PackedScene" uid="uid://k8dpwqw0blmc" path="res://scenes/win_screen.tscn" id="5_gwy4j"]
-[ext_resource type="PackedScene" uid="uid://c0pm8x4sewfic" path="res://scenes/lobby_ui.tscn" id="5_r7eh0"]
+[ext_resource type="PackedScene" uid="uid://c0pm8x4sewfic" path="res://scenes/ui/lobby_ui.tscn" id="5_r7eh0"]
 [ext_resource type="PackedScene" uid="uid://b7jocj5445xy2" path="res://scenes/ui/uno_button.tscn" id="7_sa5k7"]
 [ext_resource type="PackedScene" uid="uid://p5mjswomuwe4" path="res://scenes/ui/color_switch_menu.tscn" id="7_t7xh8"]
 [ext_resource type="PackedScene" uid="uid://bd41hcfe6l32x" path="res://scenes/ui/player_icon.tscn" id="10_olps8"]
+[ext_resource type="PackedScene" uid="uid://bjktxdg7x3ico" path="res://scenes/ui/info_gui.tscn" id="11_ya4ey"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_hyl6w"]
 shader = ExtResource("2_a1og4")
@@ -68,6 +69,7 @@ scale = Vector2(0.3, 0.3)
 [node name="player_icons" type="Node" parent="."]
 
 [node name="player_icon1" parent="player_icons" instance=ExtResource("10_olps8")]
+username = "this works"
 
 [node name="player_icon2" parent="player_icons" instance=ExtResource("10_olps8")]
 
@@ -95,3 +97,5 @@ scale = Vector2(0.7, 0.7)
 
 [node name="color_switch_menu" parent="GUI" instance=ExtResource("7_t7xh8")]
 visible = false
+
+[node name="info_gui" parent="GUI" instance=ExtResource("11_ya4ey")]

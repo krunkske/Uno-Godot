@@ -1,31 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://bqgxagm81ux1"]
+[gd_scene load_steps=2 format=3 uid="uid://bqgxagm81ux1"]
 
 [ext_resource type="PackedScene" uid="uid://bjpaxenrqk8d4" path="res://scenes/card.tscn" id="1_oyv7t"]
-[ext_resource type="Texture2D" uid="uid://bs82jui0f6sum" path="res://assets/deck.svg" id="2_3gim2"]
-[ext_resource type="Script" uid="uid://qulqiuxftdri" path="res://scripts/singe_scripts/cards/card_down.gd" id="3_t0l3u"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_5l14e"]
-atlas = ExtResource("2_3gim2")
-region = Rect2(0, 1441, 241, 361)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dvppm"]
-size = Vector2(198, 344)
 
 [node name="pile_down" type="Node2D"]
 
 [node name="card_down" parent="." instance=ExtResource("1_oyv7t")]
-visible = false
 frame = 56
 my_card = true
-top_card = true
-
-[node name="card_down2" type="Sprite2D" parent="."]
-texture = SubResource("AtlasTexture_5l14e")
-script = ExtResource("3_t0l3u")
-
-[node name="Area2D" type="Area2D" parent="card_down2"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="card_down2/Area2D"]
-shape = SubResource("RectangleShape2D_dvppm")
-
-[connection signal="input_event" from="card_down2/Area2D" to="card_down2" method="_on_area_2d_input_event"]
