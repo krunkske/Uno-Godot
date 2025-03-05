@@ -102,14 +102,14 @@ func _on_area_2d_input_event(viewport: Node, event: InputEvent, shape_idx: int) 
 	if isTopCard:
 		Server.ask_for_card.rpc_id(1)
 	#var can_play : bool = event.is_action_pressed("LmouseButton") and Aload.current_focussed_card == self
-	print("clicked %s" %card_value)
+	print("CLIENT %s: clicked %s" %[multiplayer.get_unique_id(), card_value])
 	var index := 0 #index used to decide wich card to play from the deck
 	for card in Client.myCards:
 		if card == Aload.current_focussed_card.get_frame_coords():#BUG
 			if card == card_types.CHANGE_COLOR_CARD or card == card_types.PLUS_4_CARD:
 				Aload.color_switch_menu.choose_color(index)
 			else:
-				print("Playing card")
+				print("CLIENT %s: Playing card %s" %[multiplayer.get_unique_id(), card_value])
 				Client.playCard(index, -1)
 			return
 		index += 1

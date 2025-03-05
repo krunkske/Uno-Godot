@@ -66,6 +66,7 @@ func _player_connected(_id: int) -> void:
 func _connected_ok() -> void:
 	_register_player.rpc_id(1, playerName)
 	print("CLIENT %s: Sucessfully connected to server." %multiplayer.get_unique_id())
+	Aload.info_gui.setMpId()
 
 ##Client
 func _connected_fail() -> void:
@@ -96,7 +97,6 @@ func _register_player(username: String) -> void:
 	var id := multiplayer.get_remote_sender_id()
 	var newPlayer := {"id": id, "username": username, "cards": []}
 	Server.player_data.append(newPlayer)
-	print("SERVER: %s players connected." %amount_connected)
 	if amount_connected == 1:
 		print("SERVER: %s is master" %id)
 		Aload.authorized = id

@@ -9,6 +9,7 @@ extends Node
 @onready var color_switch_menu := gui_node.get_node("color_switch_menu")
 @onready var win_screen := gui_node.get_node("win_screen")
 @onready var uno_button := gui_node.get_node("uno_button")
+@onready var info_gui := gui_node.get_node("info_gui")
 
 
 @onready var player_icons := main.get_node("player_icons")
