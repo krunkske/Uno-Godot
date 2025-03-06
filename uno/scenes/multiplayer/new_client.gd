@@ -13,10 +13,10 @@ var mid_card : Vector2i
 
 ## Check if a given card is valid to play with the current card in the middle
 func is_valid_card(card: Vector2i) -> bool:
-	print("SERVER: Checking if card is valid: " + str(card))
-	print("SERVER: Mid card is %s" %mid_card)
+	Utils.printLn("Checking if %s is valid" %card)
+	Utils.printLn("Mid card is %s" %mid_card)
 	if card == card_types.EMPTY_CARD:
-		printerr("Card is an empty card!! Returning True!!")
+		Utils.printerrLn("Card is an empty card!! Returning True!!")
 		return true
 	if card == card_types.CHANGE_COLOR_CARD:
 		return true
@@ -36,7 +36,7 @@ func is_valid_card(card: Vector2i) -> bool:
 	if card.x == 13: #TODO Dunno if this check is actually needed
 		return true
 	
-	print("SERVER: Card %s is not valid" %card)
+	Utils.printLn("Card %s is not valid" %card)
 	return false
 
 
@@ -45,13 +45,13 @@ func shiftPlayerOrder(newPlayerOrder: Array) -> Array:
 	var startIndex := newPlayerOrder.find(multiplayer.get_unique_id()) # Find your position in the array
 	
 	if startIndex == -1:
-		print("Error: Player ID not found in the list!")
+		Utils.printerrLn("Player ID not found in the list!")
 		return newPlayerOrder # Return the original order if ID is not found
 	
 	# Create a new array starting from your position and wrapping around
 	var sortedPlayerOrder = newPlayerOrder.slice(startIndex) + newPlayerOrder.slice(0, startIndex)
 	
-	print("CLIENT %s: %s is the player order" % [multiplayer.get_unique_id(), str(sortedPlayerOrder)])
+	Utils.printLn("%s is the player order" %[sortedPlayerOrder])
 	return sortedPlayerOrder
 
 
@@ -62,11 +62,12 @@ func shiftPlayerOrder(newPlayerOrder: Array) -> Array:
 ## Call this when the player wants to play a card
 ## TODO does not take special cards into account
 func playCard(cardPos: int, color: int) -> bool:
-	print("Client playin card")
-	if !is_valid_card(myCards[cardPos]):
-		printerr("Not a valid card")
+	var card : Vector2i= myCards[cardPos]
+	Utils.printLn("Playing %s card at pos %s" %[card, cardPos])
+	if !is_valid_card(card):
+		Utils.printerrLn("Not a valid card")
 		return false
-	Server.play_card.rpc_id(1, cardPos, color)
+	Server.play_card.rpc_id(1, card, color)
 	return true
 
 
@@ -80,7 +81,7 @@ func playCard(cardPos: int, color: int) -> bool:
 ## Gives each player 7 cards
 @rpc("authority", "call_remote", "reliable")
 func startGame(newPlayerOrder: Array[int], midCard: Vector2i) -> void:
-	print("CLIENT %s: Starting the game" %multiplayer.get_unique_id())
+	Utils.printLn("Starting the game")
 	playerOrder = shiftPlayerOrder(newPlayerOrder)
 	active_player = newPlayerOrder[0]
 	mid_card = midCard
@@ -100,11 +101,14 @@ func startGame(newPlayerOrder: Array[int], midCard: Vector2i) -> void:
 ## Gets called from the server when any player (even yourself) has played a card.
 ## Remove that card from the deck and add it to the mid pile
 @rpc("authority", "call_remote", "reliable")
-func playedCard(playedCard: Vector2i, indexOfCard: int, newActivePlayer: int) -> void:
+func playedCard(playedCard: Vector2i, newActivePlayer: int) -> void:
 	var i := 0
+	if active_player == multiplayer.get_unique_id():
+		Aload.deck1.remove_card(myCards.find(playedCard), playedCard)
+		return
 	for playerId in playerOrder:
 		if playerId == active_player:
-			Aload.decks[i].remove_card(indexOfCard, playedCard)
+			Aload.decks[i].remove_card(0, playedCard)
 		i+=1
 	active_player = newActivePlayer
 	mid_card = playedCard
@@ -115,7 +119,7 @@ func playedCard(playedCard: Vector2i, indexOfCard: int, newActivePlayer: int) ->
 @rpc("authority", "call_remote", "reliable")
 func syncPlayers(playerNames: Array[String]) -> void:
 	if len(playerNames) > 4:
-		printerr("Length cannot be more than 3")
+		Utils.printerrLn("Length cannot be more than 3")
 		breakpoint
 		return
 	for index in range(len(playerNames)):
@@ -124,7 +128,7 @@ func syncPlayers(playerNames: Array[String]) -> void:
 
 @rpc("authority", "call_remote", "reliable")
 func appendCards(cards: Array[Vector2i], playerId: int) -> void:
-	print("CLIENT %s: appending %s cards to %s" %[multiplayer.get_unique_id(), cards, playerId])
+	Utils.printLn("Appending %s cards to %s" %[cards, playerId])
 	if playerId == multiplayer.get_unique_id():
 		for card in cards:
 			myCards.append(card)
@@ -132,12 +136,12 @@ func appendCards(cards: Array[Vector2i], playerId: int) -> void:
 		return
 	var index := 0
 	if playerOrder == []:
-		printerr("CLIENT %s: The player oreder is empty. Cannot distribute cards. Going into an infinite loop..." %multiplayer.get_unique_id())
-		while playerOrder ==[]:
+		Utils.printerrLn("The player oreder is empty. Cannot distribute cards. Going into an infinite loop...")
+		while playerOrder == []:
 			await get_tree().create_timer(0.1).timeout
 	for i in playerOrder:
 		if i == playerId:
-			print("CLIENT %s: index: %s, playerOrder: %s" %[multiplayer.get_unique_id(), index, playerOrder])
+			Utils.printLn("Index: %s, playerOrder: %s" %[index, playerOrder])
 			for card in cards:
 				Aload.decks[index].add_card(card)
 		index += 1

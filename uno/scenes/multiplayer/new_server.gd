@@ -26,7 +26,7 @@ func get_player_pos_from_id(id:int) -> int:
 			return i
 		i += 1
 	
-	printerr("No corresponding player to id %s" %id) 
+	Utils.printerrLn("No corresponding player to id %s" %id)
 	return NAN #NAN Will cause an error
 
 
@@ -47,7 +47,7 @@ func getNextPlayerPosInList() -> int:
 
 ## Fill up the deck with all cards of an Uno deck
 func fill_deck() -> void:
-	print("SERVER: filling deck with new cards")
+	Utils.printLn("Filling deck with new cards")
 	deck = []
 	for color in range(0, 4): #4 is not included
 		for card in range(0, 13): #13 not included
@@ -56,7 +56,7 @@ func fill_deck() -> void:
 		deck.append(Vector2i(card_types.card_actions.PLUS1, special_card))
 		deck.append(card_types.PLUS_4_CARD)
 		deck.append(card_types.CHANGE_COLOR_CARD)
-	print("SERVER: filled deck with new cards")
+	Utils.printLn("Filled deck with new cards")
 
 
 ## Returns a random card from the deck and removes it from the deck.
@@ -70,19 +70,19 @@ func random_card() -> Vector2i:
 		#print("SERVER: Chose " + str(card))
 		return card
 	
-	printerr("Ran out of cards!")
-	printerr("FILLING UP THE DECK WITH NEW CARDS, RETURNING EMPTY CARD") #TODO BUG make better solution
+	Utils.printerrLn("Ran out of cards!")
+	Utils.printerrLn("FILLING UP THE DECK WITH NEW CARDS, RETURNING NEW RANDOM CARD") #TODO BUG make better solution
 	fill_deck()
 	
-	return card_types.EMPTY_CARD
+	return random_card()
 
 
 ## Check if a given card is valid to play with the current card in the middle
 func is_valid_card(card: Vector2i) -> bool:
-	print("SERVER: Checking if card is valid: " + str(card))
-	print("SERVER: Mid card is %s" %mid_card)
+	Utils.printLn("Checking if %s is valid" %card)
+	Utils.printLn("mid card is %s" %mid_card)
 	if card == card_types.EMPTY_CARD:
-		printerr("Card is an empty card!! Returning True!!")
+		Utils.printerrLn("Card is an empty card!! Returning True!!")
 		return true
 	if card == card_types.CHANGE_COLOR_CARD:
 		return true
@@ -102,7 +102,7 @@ func is_valid_card(card: Vector2i) -> bool:
 	if card.x == 13: #TODO Dunno if this check is actually needed
 		return true
 	
-	print("SERVER: Card %s is not valid" %card)
+	Utils.printLn("Card %s is not valid" %card)
 	return false
 
 
@@ -128,11 +128,11 @@ func checkSkipAmount(card: Vector2i) -> int:
 ## Notifes all players that the game has started with the needed properties
 func startGame():
 	print("-------------------------------------")
-	print("SERVER: Starting game")
+	Utils.printLn("Starting game")
 	fill_deck()
 	mid_card = random_card()
 	active_player = player_data[0].id
-	print("SERVER: Active player is " + str(active_player))
+	Utils.printLn("Active player is %s" %active_player)
 	
 	#Make a playerNames and playerOrder array to send to the clients
 	var playerNames :Array[String] = []
@@ -151,20 +151,20 @@ func startGame():
 ## Checks what attributes should trigger with a specific card and applies them
 ## Checks whether cards should be given, direction reversed and returns how many players turn should be skipped
 func applySpecialAttributes(card: Vector2i) -> int:
-	print("SERVER: Checking for special attributes")
+	Utils.printLn("Checking for special attributes")
 	if card.x == card_types.card_actions.SWITCH:
-		print("SERVER: Switching direction")
+		Utils.printLn("Switching direction")
 		reversed != reversed
 	elif card.x == card_types.card_actions.PLUS2:
 		var nextPlayer := getNextPlayerPosInList()
-		print("SERVER: Giving %s 2 cards" %player_data[nextPlayer].id)
+		Utils.printLn("Giving %s 2 cards" %player_data[nextPlayer].id)
 		giveCards(player_data[nextPlayer].id, 2)
 	elif card == card_types.PLUS_4_CARD:
 		var nextPlayer := getNextPlayerPosInList()
-		print("SERVER: Giving %s 4 cards" %player_data[nextPlayer].id)
+		Utils.printLn("Giving %s 4 cards" %player_data[nextPlayer].id)
 		giveCards(player_data[nextPlayer].id, 4)
 	elif card.x == card_types.card_actions.PLUS1 and card.y > 3:
-		print("SERVER: Giving all players a card")
+		Utils.printLn("Giving all players a card")
 		for player in player_data:
 			if player.id != active_player:
 				giveCards(player.id, 1)
@@ -179,14 +179,14 @@ func set_next_player_turn(extraSkipAmount: int) -> void:
 	for i in range(extraSkipAmount):
 		pos = getNextPlayerPosInList()
 	active_player = player_data[pos].id
-	print("SERVER: Position %s" %pos)
-	print("SERVER: %s is the new active player" %active_player)
+	Utils.printLn("Position %s" %pos)
+	Utils.printLn("%s is the new active player" %active_player)
 
 
 ## Gives a set amount of random cards from the deck to the specified player. 
 ## Sends an rpc call to all players notifying them of the new cards.
 func giveCards(playerId: int, amount: int) -> void:
-	print("SERVER: Giving %s %s cards" %[playerId, amount])
+	Utils.printLn("Giving %s %s cards" %[playerId, amount])
 	var playerPos := get_player_pos_from_id(playerId)
 	for i in range(amount):
 		player_data[playerPos].cards.append(random_card())
@@ -207,23 +207,32 @@ func giveCards(playerId: int, amount: int) -> void:
 
 
 ## Can get called by any player
-## when a player is allowed to play a card it will check if he can. Applies special attributes like giving cards or switching colors
+## when a player want's to play a card it will check if he can. Applies special attributes like giving cards or switching colors
 @rpc("any_peer", "call_remote", "reliable")
-func play_card(card_pos_in_deck:int, color:int) -> void:
+func play_card(playedCard:Vector2i, color:int) -> void:
 	var sender_id := multiplayer.get_remote_sender_id()
-	print("SERVER: Recieved playing card from " + str(sender_id))
+	print("---------------------")
+	Utils.printLn("Recieved playing card from %s" %sender_id)
 	if sender_id != active_player: 
-		print("SERVER: Player %s is not the active player. Active player is %s" %[sender_id, active_player])
+		Utils.printLn("Player %s is not the active player. Active player is %s" %[sender_id, active_player])
 		return
 	var pos := get_player_pos_from_id(sender_id)
 	var player := player_data[pos]
-	var card : Vector2i = player.cards[card_pos_in_deck]
-	print("SERVER: Player played " + str(card))
+	var card := card_types.BACK_OF_CARD
+	for i in player.cards:
+		if i == playedCard:
+			card = i
+			break
+	if card == card_types.BACK_OF_CARD:
+		Utils.printLn("Player %s does not have card %s" %[sender_id, playedCard])
+		return
+	Utils.printLn("Player played %s" %card)
+	Utils.printLn("Player data: %s" %player)
 	if is_valid_card(card):
-		print("SERVER: Card %s is valid" %card)
+		Utils.printLn("Card %s is valid" %card)
 		mid_card = card
 		var skipAmount := applySpecialAttributes(card)
-		print("SERVER: Skipping %s player(s) turn" %skipAmount)
+		Utils.printLn("Skipping %s player(s) turn" %skipAmount)
 		
 		set_next_player_turn(skipAmount)
-		Client.playedCard.rpc(card, card_pos_in_deck, active_player)
+		Client.playedCard.rpc(card, active_player)

@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="true" type="GDSCRIPT_DEBUG_RUN_CONFIGURATION" factoryName="GdScriptRunFactory" singleton="false" show_console_on_std_err="false" show_console_on_std_out="false" port="6006">
+    <option name="address" value="127.0.0.1" />
+    <option name="allowRunningInParallel" value="true" />
+    <option name="listenPortForConnections" value="false" />
+    <option name="projectPathOnTarget" />
+    <option name="selectedOptions">
+      <list />
+    </option>
+    <method v="2" />
+  </configuration>
+</component>

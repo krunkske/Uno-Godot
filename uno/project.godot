@@ -22,6 +22,7 @@ Aload="*res://scripts/main_scripts/Aload.gd"
 Lobby="*res://scripts/multiplayer/lobby.gd"
 Client="*res://scenes/multiplayer/new_client.tscn"
 Server="*res://scenes/multiplayer/new_server.tscn"
+Utils="*res://scripts/helpers/utils.gd"
 
 [display]
 

@@ -60,24 +60,24 @@ func _player_connected(_id: int) -> void:
 			server_full.rpc_id(_id)
 			return
 		amount_connected += 1
-		print("SERVER: %s players connected" %amount_connected)
+		Utils.printLn("%s players connected" %amount_connected)
 
 ##Client
 func _connected_ok() -> void:
 	_register_player.rpc_id(1, playerName)
-	print("CLIENT %s: Sucessfully connected to server." %multiplayer.get_unique_id())
+	Utils.printLn("Sucessfully connected to server.")
 	Aload.info_gui.setMpId()
 
 ##Client
 func _connected_fail() -> void:
-	printerr("CLIENT %s: Connection failed." %multiplayer.get_unique_id())
+	Utils.printerrLn("Connection failed.")
 	Aload.reset()
 
 ##All
 func _player_disconnected(_id: int) -> void:
 	if not multiplayer.is_server():
 		return
-	print("SERVER: %s disconnected." %_id)
+	Utils.printLn("%s disconnected." %_id)
 	amount_connected -= 1
 	var counter := 0
 	for player in Server.player_data:
@@ -87,7 +87,7 @@ func _player_disconnected(_id: int) -> void:
 		counter += 1
 
 func _server_disconnected() -> void:
-	print("Server closed.")
+	Utils.printLn("Server closed.")
 	Aload.reset()
 
 ##registers a new player and adds it to the list of players
@@ -98,13 +98,13 @@ func _register_player(username: String) -> void:
 	var newPlayer := {"id": id, "username": username, "cards": []}
 	Server.player_data.append(newPlayer)
 	if amount_connected == 1:
-		print("SERVER: %s is master" %id)
+		Utils.printLn("%s is master" %id)
 		Aload.authorized = id
 
 ##Client
 @rpc("authority", "call_remote", "reliable")
 func server_full() -> void:
-	print("Server full.")
+	Utils.printLn("Server full.")
 	Aload.reset()
 
 ##Server
